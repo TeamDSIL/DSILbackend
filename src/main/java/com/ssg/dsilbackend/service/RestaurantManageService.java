@@ -46,6 +46,8 @@ public interface RestaurantManageService {
 
     List<MenuDTO> getMenuList(Long restaurantId);
 
+    MenuDTO getMenuById(Long id);
+
 
     //리뷰에 자동으로 답글달기
 

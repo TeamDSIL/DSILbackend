@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.dsilbackend.domain.*;
 import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import com.ssg.dsilbackend.dto.Crowd;
+import com.ssg.dsilbackend.dto.File.FileDTO;
 import com.ssg.dsilbackend.dto.restaurantManage.*;
+import com.ssg.dsilbackend.service.FileService;
 import com.ssg.dsilbackend.service.RestaurantManageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,8 +16,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -28,6 +32,7 @@ import java.util.Map;
 @Log4j2
 public class RestaurantManageController {
     private final RestaurantManageService restaurantManageService;
+    private final FileService fileService;
 
 
     //식당id로 하나의 식당을 조회하는 메소드
@@ -41,12 +46,67 @@ public class RestaurantManageController {
     }
 
     //식당정보를 수정하는 메소드
+
+    //이제 됩니다. 여기가 기준이오.
+    //또 안되니까 수정했다! 이제 컨트롤z그만..
+    //이제 되니까 건들지 마쇼제발.
     @PutMapping("/{restaurant-id}")
-    public ResponseEntity<RestaurantManageDTO> updateRestaurant(@PathVariable("restaurant-id") Long id, @RequestBody RestaurantManageDTO restaurantDTO) {
+    public ResponseEntity<RestaurantManageDTO> updateRestaurant(
+            @PathVariable("restaurant-id") Long id,
+            @RequestPart("restaurantData") String restaurantDataJson,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "menuImages", required = false) List<MultipartFile> menuImages) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        RestaurantManageDTO restaurantDTO = mapper.readValue(restaurantDataJson, RestaurantManageDTO.class);
+
+        // 식당 이미지 처리
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = fileService.uploadFiles(List.of(image), "restaurant-images").get(0).getUploadFileUrl();
+            restaurantDTO.setImg(imageUrl);
+        } else {
+            // 기존 이미지가 null이 아닌 경우 기존 이미지를 유지
+            RestaurantManageDTO existingRestaurant = restaurantManageService.getRestaurant(id);
+            if (existingRestaurant != null && existingRestaurant.getImg() != null) {
+                restaurantDTO.setImg(existingRestaurant.getImg());
+            }
+        }
+
+        // 메뉴 이미지 처리
+        List<MenuDTO> menus = restaurantDTO.getMenus();
+        if (menuImages != null && !menuImages.isEmpty()) {
+            for (int i = 0; i < menus.size(); i++) {
+                MenuDTO menu = menus.get(i);
+                if (menu.getId() != null) {
+                    // 기존 메뉴 업데이트
+                    MultipartFile menuImage = menuImages.get(i);
+                    if (menuImage != null && !menuImage.isEmpty()) {
+                        String menuImageUrl = fileService.uploadFiles(List.of(menuImage), "menu-images").get(0).getUploadFileUrl();
+                        menu.setImg(menuImageUrl);
+                    } else {
+                        // 기존 이미지가 null이 아닌 경우 기존 이미지를 유지
+                        MenuDTO existingMenu = restaurantManageService.getMenuById(menu.getId());
+                        if (existingMenu != null && existingMenu.getImg() != null) {
+                            menu.setImg(existingMenu.getImg());
+                        }
+                    }
+                } else {
+                    // 새로운 메뉴
+                    MultipartFile menuImage = menuImages.get(i);
+                    if (menuImage != null && !menuImage.isEmpty()) {
+                        String menuImageUrl = fileService.uploadFiles(List.of(menuImage), "menu-images").get(0).getUploadFileUrl();
+                        menu.setImg(menuImageUrl);
+                    }
+                }
+            }
+        }
+
         restaurantDTO.setId(id);
-        System.out.println("식당수정 메소드의 식당디티오"+restaurantDTO);
-        return ResponseEntity.ok(restaurantManageService.updateRestaurant(id, restaurantDTO));
+        RestaurantManageDTO updatedRestaurant = restaurantManageService.updateRestaurant(id, restaurantDTO);
+        return ResponseEntity.ok(updatedRestaurant);
     }
+
+
 
     //멤버id로 해당하는 식당 리스트를 조회하는 메소드
     @GetMapping("/{memberId}/restaurants")
