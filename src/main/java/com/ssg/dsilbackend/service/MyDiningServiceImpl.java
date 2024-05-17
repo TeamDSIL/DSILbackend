@@ -33,6 +33,7 @@ public class MyDiningServiceImpl implements MyDiningService {
     public List<MydiningReserveDTO> getMydiningReserveListById(Long id) {
         Members member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with ID: " + id));
+        System.out.println(" push가 게속안돼서 이것저것바꾸는중 보면 지우셈 마이다이닝 서비스");
 
         List<Reservation> reservations = reservationRepository.findByMembers(member);
 
