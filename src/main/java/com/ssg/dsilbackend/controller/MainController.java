@@ -30,22 +30,28 @@ public class MainController {
     }
 
     // 카카오 맵
-    @GetMapping("api/restaurants")
+    @GetMapping("/api/restaurants")
     public ResponseEntity<List<MainMapDTO>> getNearbyRestaurants(){
         List<MainMapDTO> nearRestaurants = mainService.getNearbyRestaurants();
         return ResponseEntity.ok(nearRestaurants);
     }
 
+    //조회
+    @GetMapping("main/topten/views")
+    public ResponseEntity<List<ToptenDTO>> getTopViews(){
+       List<ToptenDTO> topViews = mainService.getTopViews();
+       return ResponseEntity.ok(topViews);
+    }
 
     //예약
-    @GetMapping("topten/reservations")
+    @GetMapping("main/topten/reservations")
     public ResponseEntity<List<ToptenDTO>> getTopReservations(){
         List<ToptenDTO> topReserves = mainService.getTopReservations();
         return ResponseEntity.ok(topReserves);
     }
 
     //즐겨찾기
-    @GetMapping("topten/bookmarks")
+    @GetMapping("main/topten/bookmarks")
     public ResponseEntity<List<ToptenDTO>> getTopBookmarks(){
         List<ToptenDTO> topBookmarks = mainService.getTopBookmarks();
         return ResponseEntity.ok(topBookmarks);

@@ -43,6 +43,9 @@ public class Restaurant {
     @Column(name = "restaurant_description", length = 100)
     private String description;
 
+    @Column(name = "view_count")
+    private Long count;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Members member;
