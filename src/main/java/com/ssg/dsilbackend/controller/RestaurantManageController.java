@@ -1,5 +1,7 @@
 package com.ssg.dsilbackend.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.dsilbackend.domain.*;
 import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import com.ssg.dsilbackend.dto.Crowd;
@@ -8,10 +10,15 @@ import com.ssg.dsilbackend.service.RestaurantManageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -182,7 +189,17 @@ public class RestaurantManageController {
         }
     }
 
-}
+
+    //리뷰에 자동으로 답글달기
+//    @PostMapping("/{reviewId}/reply")
+//    public Review addReply(@PathVariable Long reviewId) {
+//        return restaurantManageService.addReplyToReview(reviewId);
+//    }
+
+    }
+
+
+
 
 
 

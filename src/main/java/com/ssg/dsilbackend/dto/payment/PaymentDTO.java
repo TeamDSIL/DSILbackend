@@ -1,6 +1,7 @@
 package com.ssg.dsilbackend.dto.payment;
 
 
+import com.ssg.dsilbackend.dto.PaymentStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,4 +20,6 @@ public class PaymentDTO {
     private String buyerEmail;
     private String buyerName;
     private String buyerTel;
+    private Long reservationId;
+    private PaymentStatus paymentStatus;
 }

@@ -38,7 +38,6 @@ public class Review {
     @Column(name = "review_delete_status", nullable = false)
     private boolean deleteStatus;
 
-
     @Column(name = "review_img", length = 500)
     private String img;
 
@@ -50,10 +49,16 @@ public class Review {
         this.deleteStatus = deleteStatus;
     }
 
-        public void setDeleteStatus ( boolean del){
-            this.deleteStatus = true;
 
-        }
+    public void setDeleteStatus(boolean del) {
+        this.deleteStatus = true;
 
     }
+
+
+    public void setReplyNUll() {
+        this.reply = null;
+    }
+
+}
 

@@ -17,7 +17,11 @@ import java.util.List;
 @Log4j2
 public class MyDiningRepositoryTest {
     @Autowired
+<<<<<<< HEAD
+    private MemberRepository membersRepository;
+=======
     private MemberRepository memberRepository;
+>>>>>>> 6e6f942ebc970aba78ff2502983b4892db178252
 
     @Autowired
     private ReservationRepository reservationRepository;

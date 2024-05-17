@@ -22,7 +22,9 @@ public class MyDiningServiceImpl implements MyDiningService {
     private final ModelMapper modelMapper;
     private final RestaurantRepository restaurantRepository;
     private final ReservationRepository reservationRepository;
+
     private final MemberRepository memberRepository;
+
     private final ReviewRepository reviewRepository;
     private final BookmarkRepository bookmarkRepository;
 
@@ -33,6 +35,7 @@ public class MyDiningServiceImpl implements MyDiningService {
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with ID: " + id));
 
         List<Reservation> reservations = reservationRepository.findByMembers(member);
+
 
         return reservations.stream()
                 .map(this::convertToDto)
@@ -45,9 +48,10 @@ public class MyDiningServiceImpl implements MyDiningService {
         Double averageScore = reviewRepository.findAverageScoreByRestaurantId(reservation.getRestaurant().getId());
         if (averageScore == null) averageScore = 0.0; // 평균 점수가 없는 경우 0.0으로 처리
         long reviewCount = reviewRepository.countByReservationRestaurantId(reservation.getRestaurant().getId()); // 리뷰 개수 조회
-
-        return MydiningReserveDTO.from(reservation, averageScore, reviewCount);
+        boolean isReview = reviewRepository.existsByReservationId(reservation.getId()); // Check if a review exists
+        return MydiningReserveDTO.from(reservation, averageScore, reviewCount, isReview);
     }
+
 
     // 사용자 아이디번호 받아서 즐겨찾기 리스트 출력
     public List<MydiningBookmarkDTO> getMydiningBookmarksListById(Long id) {
@@ -93,6 +97,7 @@ public class MyDiningServiceImpl implements MyDiningService {
                 .score(reviewRequest.getReviewScore()) // 평점
                 .deleteStatus(false) // 삭제 상태 초기화
                 .reply(null)
+                .img(reviewRequest.getImg())
                 .build();
 
         // Review 객체 저장

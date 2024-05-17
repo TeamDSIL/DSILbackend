@@ -5,6 +5,7 @@ import com.ssg.dsilbackend.dto.myDinig.MydiningReserveDTO;
 import com.ssg.dsilbackend.dto.myDinig.MydiningReviewsDTO;
 import com.ssg.dsilbackend.dto.userManage.RegisterMenuDTO;
 import com.ssg.dsilbackend.dto.userManage.RestaurantRegisterDTO;
+import com.ssg.dsilbackend.dto.userManage.ReviewReplyDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,15 @@ public class MyDiningServiceTest {
 
         // 검증
         //verify(menuRepository, times(2)).save(any(Menu.class));
+    }
+
+    @Test
+    public void testGetReviewInfoList(){
+
+        List<ReviewReplyDTO> reviewReplyDTOS = userManageService.getReviewReplyList();
+        for(ReviewReplyDTO review : reviewReplyDTOS){
+            System.out.println(review);
+        }
     }
 
 }

@@ -32,18 +32,11 @@ import java.time.LocalDateTime;
 
         private final MemberRepository memberRepository;
 
-        private final ReserveService reserveService;
 
-        public void savePayment(PaymentDTO paymentDTO) {
+        public void savePayment(PaymentDTO paymentDTO,Long reservationId) {
             try {
-                //Members member = memberRepository.findById(reserveDTO.getMemberId()).orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + reserveDTO.getMemberId()));
-
-                //Restaurant restaurant = restaurantRepository.findById(reserveDTO.getRestaurantId()).orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + reserveDTO.getRestaurantId()));
-                Long memberId = 1L;
-
+                Long memberId = 30L;
                 Long restaurantId = 1L;
-
-                Long reservationId = 1L;
 
                 Members member = memberRepository.findById(memberId)
                         .orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + memberId));
@@ -52,8 +45,7 @@ import java.time.LocalDateTime;
                         .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + restaurantId));
 
                 Reservation reservation = reserveRepository.findById(reservationId)
-                        .orElseThrow(() -> new EntityNotFoundException("Reserve not found with ID: " + restaurantId));
-
+                        .orElseThrow(() -> new EntityNotFoundException("reservationId not found with ID: " + reservationId));
 
                 Payment payment = Payment.builder()
                         .amount(paymentDTO.getAmount())
@@ -70,7 +62,6 @@ import java.time.LocalDateTime;
                         .build();
 
                 paymentRepository.save(payment);
-
             } catch (Exception e) {
                 log.error(e);
             }

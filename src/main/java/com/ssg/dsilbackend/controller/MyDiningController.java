@@ -1,14 +1,19 @@
 package com.ssg.dsilbackend.controller;
 
+import com.ssg.dsilbackend.dto.File.FileDTO;
 import com.ssg.dsilbackend.dto.myDinig.*;
 import com.ssg.dsilbackend.dto.userManage.RestaurantRegisterDTO;
+import com.ssg.dsilbackend.service.FileService;
 import com.ssg.dsilbackend.service.MyDiningService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,13 +22,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyDiningController {
     private final MyDiningService myDiningService;
+    private final FileService fileService;
 
     // 사용자 id 를 받아서 해당 예약리스트 출력
     @GetMapping("/reservations/{id}")
     public ResponseEntity<?> getMydiningListById(@PathVariable Long id) {
         try {
             List<MydiningReserveDTO> reservations = myDiningService.getMydiningReserveListById(id);
-
             if (reservations.isEmpty()) {
                 // 데이터가 없는 경우 404 Not Found 반환
                 return ResponseEntity.notFound().build();
@@ -46,23 +51,55 @@ public class MyDiningController {
     // 사용자 id 를 받아서 해당 리뷰 출력
     @GetMapping("/reviews/{id}")
     public List<MydiningReviewsDTO> getMydiningReviewsListById(@PathVariable Long id) {
-        System.out.println(id);
-        System.out.println(id);
         return myDiningService.getMydiningReviewsListById(id);
     }
 
 
     //리뷰 등록
+//    @PostMapping("/registerReview")
+//    public ResponseEntity<?> registerReview(@RequestBody ReviewRequest reviewRequest) {
+//        try {
+//            System.out.println(reviewRequest);
+//            myDiningService.registerReview(reviewRequest);
+//            return ResponseEntity.ok("리뷰가 성공적으로 등록되었습니다.");
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("Error registering review: " + e.getMessage());
+//        }
+//    }
+
     @PostMapping("/registerReview")
-    public ResponseEntity<?> registerReview(@RequestBody ReviewRequest reviewRequest) {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
+                                        @RequestParam("reviewContents") String reviewContents,
+                                        @RequestParam("reservationId") Long reservationId,
+                                        @RequestParam("registerDate") String registerDate,
+                                        @RequestParam("reviewScore") Long reviewScore,
+                                        @RequestParam("userEmail") String userEmail) {
         try {
-            System.out.println(reviewRequest);
+            // Save file to S3 and get FileDTO
+            List<FileDTO> fileDTOList = fileService.uploadFiles(List.of(file), "reviews");
+            String img = fileDTOList.get(0).getUploadFileUrl();
+
+            // Save review details
+            ReviewRequest reviewRequest = ReviewRequest.builder()
+                    .reviewContents(reviewContents)
+                    .reservationId(reservationId)
+                    .registerDate(LocalDate.parse(registerDate))
+                    .reviewScore(reviewScore)
+                    .userEmail(userEmail)
+                    .img(img)
+                    .build();
+
             myDiningService.registerReview(reviewRequest);
-            return ResponseEntity.ok("리뷰가 성공적으로 등록되었습니다.");
+
+            return ResponseEntity.ok("File uploaded and review saved successfully");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error registering review: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
         }
     }
+
+
+
+
 
     // 예약 취소 (CANCLED 상태 변경)
     @PutMapping("/reservation-cancel/{reservationId}")

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -43,4 +45,9 @@ public interface RestaurantManageService {
     List<FacilityDTO> getFacilityList(Long restaurantId);
 
     List<MenuDTO> getMenuList(Long restaurantId);
+
+
+    //리뷰에 자동으로 답글달기
+
+
 }

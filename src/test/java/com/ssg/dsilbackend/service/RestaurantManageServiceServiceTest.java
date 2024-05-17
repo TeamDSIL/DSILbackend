@@ -3,6 +3,7 @@ package com.ssg.dsilbackend.service;
 import com.ssg.dsilbackend.domain.*;
 import com.ssg.dsilbackend.dto.*;
 import com.ssg.dsilbackend.dto.reserve.ReserveDTO;
+import com.ssg.dsilbackend.dto.restaurantManage.ReservationDTO;
 import com.ssg.dsilbackend.dto.restaurantManage.RestaurantManageDTO;
 import com.ssg.dsilbackend.dto.restaurantManage.ReviewDTO;
 import com.ssg.dsilbackend.repository.*;
@@ -50,7 +51,7 @@ class RestaurantManageServiceServiceTest {
     @Test
     void getReservationTest(){
         Long restaurantId = 1l;
-        List<ReserveDTO> reservations = restaurantManageService.getReservationList(restaurantId);
+        List<ReservationDTO> reservations = restaurantManageService.getReservationList(restaurantId);
         System.out.println(reservations);
     }
 
