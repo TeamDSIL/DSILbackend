@@ -45,12 +45,22 @@ public class ReserveService {
 
             String name = member.getName();
 
+            String phone = member.getTel();
+
             String reservationName;
+
+            String reservationTel;
 
             if (reserveDTO.getReservationName() == null || reserveDTO.getReservationName().isEmpty()) {
                 reservationName = name; // 예약명이 없는 경우 회원의 이름 사용
             } else {
                 reservationName = reserveDTO.getReservationName();
+            }
+
+            if(reserveDTO.getReservationTel() == null || reserveDTO.getReservationTel().isEmpty()) {
+                reservationTel = phone;
+            }else {
+                reservationTel = reserveDTO.getReservationTel();
             }
 
             Reservation reservation = Reservation.builder()
@@ -61,7 +71,7 @@ public class ReserveService {
                     .restaurant(restaurant)
                     .members(member)
                     .requestContent(reserveDTO.getRequestContent())
-                    .reservationTel(reserveDTO.getReservationTel())
+                    .reservationTel(reservationTel)
                     .reservationName(reservationName)
                     .build();
 
@@ -73,7 +83,7 @@ public class ReserveService {
             AvailableTimeTable reservationTime = reservation.getReservationTime();
             int peopleCount = reservation.getPeopleCount();
 
-            String reservationInfo = "예약 날짜는 : " + reservationDate + "이며 \n" + "예약 시간은 " + reservationTime + "이고 \n" + "예약 인원 수는 " + peopleCount + "명입니다";
+            String reservationInfo = "방문 고객 : " + reservationName +"\n예약 날짜는 : " + reservationDate + "이며 \n" + "예약 시간은 " + reservationTime + "이고 \n" + "예약 인원 수는 " + peopleCount + "명입니다";
 
             String email = reservation.getMembers().getEmail();
 

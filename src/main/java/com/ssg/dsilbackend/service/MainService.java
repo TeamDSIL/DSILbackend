@@ -13,8 +13,13 @@ public interface MainService {
 
     //카카오 맵
     List<MainMapDTO> getNearbyRestaurants();
+
+    //조회
+    List<ToptenDTO> getTopViews();
+
     //예약
     List<ToptenDTO> getTopReservations();
+
     //즐겨찾기
     List<ToptenDTO> getTopBookmarks();
 }
