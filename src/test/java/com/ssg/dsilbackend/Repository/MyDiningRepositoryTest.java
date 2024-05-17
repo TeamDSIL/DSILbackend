@@ -22,7 +22,6 @@ public class MyDiningRepositoryTest {
 
     private MemberRepository memberRepository;
 
-
     @Autowired
     private ReservationRepository reservationRepository;
 
