@@ -1,4 +1,4 @@
-package com.ssg.dsilbackend.controller;
-
-public class RestaurantManageControllerTest {
-}
+//package com.ssg.dsilbackend.controller;
+//
+//public class RestaurantManageControllerTest {
+//}

@@ -1,4 +1,4 @@
-package com.ssg.dsilbackend.Repository;
-
-public class UserManageRepositoryTest {
-}
+//package com.ssg.dsilbackend.Repository;
+//
+//public class UserManageRepositoryTest {
+//}
