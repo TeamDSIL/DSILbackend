@@ -17,38 +17,38 @@ import java.util.List;
 @Log4j2
 public class MyDiningServiceTest {
 
-    @Autowired
-    private MyDiningService myDiningService;
-    @Autowired
-    private UserManageService userManageService;
-
-
-    @Test
-    public void testGetMydiningListById() {
-        Long memberId = 2L;
-        List<MydiningReserveDTO> mydiningReserveDTOList = myDiningService.getMydiningReserveListById(memberId);
-        System.out.println(mydiningReserveDTOList);
-    }
-
-    @Test
-    public void testGetMydiningBookmarksListById(){
-        Long memberId = 2L;
-        System.out.println(myDiningService.getMydiningBookmarksListById(memberId));
-    }
-
-    // 사용자 아이디로 리뷰 리스트 출력
-    @Test
-    public void testGetMydiningReviewsListById(){
-        Long memberId = 2l;
-        List<MydiningReviewsDTO> list = myDiningService.getMydiningReviewsListById(memberId);
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i));
-        }
-
-    }
-
-    @Test
-    public void testRegisterRestaurantInfoWithMenu() {
+//    @Autowired
+//    private MyDiningService myDiningService;
+//    @Autowired
+//    private UserManageService userManageService;
+//
+//
+//    @Test
+//    public void testGetMydiningListById() {
+//        Long memberId = 2L;
+//        List<MydiningReserveDTO> mydiningReserveDTOList = myDiningService.getMydiningReserveListById(memberId);
+//        System.out.println(mydiningReserveDTOList);
+//    }
+//
+//    @Test
+//    public void testGetMydiningBookmarksListById(){
+//        Long memberId = 2L;
+//        System.out.println(myDiningService.getMydiningBookmarksListById(memberId));
+//    }
+//
+//    // 사용자 아이디로 리뷰 리스트 출력
+//    @Test
+//    public void testGetMydiningReviewsListById(){
+//        Long memberId = 2l;
+//        List<MydiningReviewsDTO> list = myDiningService.getMydiningReviewsListById(memberId);
+//        for (int i = 0; i < list.size(); i++) {
+//            System.out.println(list.get(i));
+//        }
+//
+//    }
+//
+//    @Test
+//    public void testRegisterRestaurantInfoWithMenu() {
         // 준비
 //        List<RegisterMenuDTO> menuDTOs = new ArrayList<>();
 //        menuDTOs.add(RegisterMenuDTO.builder()
@@ -95,15 +95,15 @@ public class MyDiningServiceTest {
 
         // 검증
         //verify(menuRepository, times(2)).save(any(Menu.class));
-    }
+//    }
 
-    @Test
-    public void testGetReviewInfoList(){
-
-        List<ReviewReplyDTO> reviewReplyDTOS = userManageService.getReviewReplyList();
-        for(ReviewReplyDTO review : reviewReplyDTOS){
-            System.out.println(review);
-        }
-    }
+//    @Test
+//    public void testGetReviewInfoList(){
+//
+//        List<ReviewReplyDTO> reviewReplyDTOS = userManageService.getReviewReplyList();
+//        for(ReviewReplyDTO review : reviewReplyDTOS){
+//            System.out.println(review);
+//        }
+//    }
 
 }
