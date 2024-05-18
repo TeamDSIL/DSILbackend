@@ -35,13 +35,11 @@ public class ReserveService {
         try {
 
             Long memberId = 44L;
-            Long restaurantId = 2L;
 
             Members member = memberRepository.findById(memberId)
                     .orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + memberId));
 
-            Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                    .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + restaurantId));
+            Restaurant restaurant = restaurantRepository.findById(reserveDTO.getRestaurantId()).orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + reserveDTO.getRestaurantId()));
 
             String name = member.getName();
 
@@ -68,8 +66,8 @@ public class ReserveService {
                     .reservationDate(reserveDTO.getReservationDate())
                     .peopleCount(reserveDTO.getPeopleCount())
                     .reservationStateName(ReservationStateName.RESERVED)
-                    .restaurant(restaurant)
                     .members(member)
+                    .restaurant(restaurant)
                     .requestContent(reserveDTO.getRequestContent())
                     .reservationTel(reservationTel)
                     .reservationName(reservationName)
