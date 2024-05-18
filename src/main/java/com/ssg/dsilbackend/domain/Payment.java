@@ -53,4 +53,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "point_usage")
+    private Long pointUsage;
+
 }

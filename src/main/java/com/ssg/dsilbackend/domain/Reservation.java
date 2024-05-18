@@ -5,6 +5,8 @@ import com.ssg.dsilbackend.dto.ReservationStateName;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -52,6 +54,9 @@ public class Reservation {
 
     @Column(name = "reservation_tel",length = 13)
     private String reservationTel;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdTime;
 
     public void setReservationStateName(ReservationStateName state) {
         this.reservationStateName = state;

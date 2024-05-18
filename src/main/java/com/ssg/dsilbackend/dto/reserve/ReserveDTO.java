@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -19,5 +20,5 @@ public class ReserveDTO {
     private String requestContent;
     private LocalDate reservationDate;
     private String reservationTel;
-
+    private LocalDateTime createdTime;
 }
