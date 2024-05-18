@@ -49,6 +49,7 @@ import java.time.LocalDateTime;
                         .merchantUid(paymentDTO.getMerchant_uid())
                         .reservation(reservation)
                         .paymentStatus(PaymentStatus.COMPLETED)
+                        .pointUsage(paymentDTO.getPointUsage())
                         .build();
 
                 paymentRepository.save(payment);

@@ -21,4 +21,5 @@ public class PaymentDTO {
     private String buyerTel;
     private Long reservationId;
     private PaymentStatus paymentStatus;
+    private Long pointUsage;
 }
