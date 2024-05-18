@@ -49,7 +49,13 @@ public class MainServiceImpl implements MainService {
 
     }
 
-
+    @Override
+    public List<ToptenDTO> getTopViews(){
+        Pageable topTen = PageRequest.of(0, 10);
+        return restaurantRepository.findAllByOrderByCountDesc(topTen).stream()
+                .map(restaurant -> new ToptenDTO(restaurant.getId(), restaurant.getName(), restaurant.getImg()))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<ToptenDTO> getTopReservations() {

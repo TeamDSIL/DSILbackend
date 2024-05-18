@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/restaurant")
@@ -49,61 +50,69 @@ public class RestaurantManageController {
 
     //이제 됩니다. 여기가 기준이오.
     //또 안되니까 수정했다! 이제 컨트롤z그만..
-    //이제 되니까 건들지 마쇼제발.
+    //이제... 괜찮다고.. 건들지 마라고... 그만
+    //그만건들자고!
+    //이제 또 분수령이다. 현재시각 5월17일 오후 6시 24분. 간다.
+    //또 무언가를 한다. 왜냐면 메뉴추가가 안되거든. 메뉴이미지는 성공했는데. 메뉴추가가 안되서 해보는 수정작업!
+    //신중하게 합시다 현재시각 5월 18일 오후 2시 33분......
     @PutMapping("/{restaurant-id}")
     public ResponseEntity<RestaurantManageDTO> updateRestaurant(
             @PathVariable("restaurant-id") Long id,
             @RequestPart("restaurantData") String restaurantDataJson,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "menuImages", required = false) List<MultipartFile> menuImages) throws IOException {
+            @RequestParam Map<String, MultipartFile> menuImages) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
         RestaurantManageDTO restaurantDTO = mapper.readValue(restaurantDataJson, RestaurantManageDTO.class);
+        // JSON 데이터 로그 출력
+        log.info("제이슨Received restaurantDataJson: {}", restaurantDataJson);
+
+
+
+        // 기존 식당 정보 가져오기
+        RestaurantManageDTO existingRestaurant = restaurantManageService.getRestaurant(id);
 
         // 식당 이미지 처리
         if (image != null && !image.isEmpty()) {
             String imageUrl = fileService.uploadFiles(List.of(image), "restaurant-images").get(0).getUploadFileUrl();
-            restaurantDTO.setImg(imageUrl);
-        } else {
-            // 기존 이미지가 null이 아닌 경우 기존 이미지를 유지
-            RestaurantManageDTO existingRestaurant = restaurantManageService.getRestaurant(id);
-            if (existingRestaurant != null && existingRestaurant.getImg() != null) {
-                restaurantDTO.setImg(existingRestaurant.getImg());
-            }
+            restaurantDTO.setImg(imageUrl); // S3에서 반환된 이미지 URL을 설정
+        } else if (existingRestaurant != null && existingRestaurant.getImg() != null) {
+            restaurantDTO.setImg(existingRestaurant.getImg());
         }
 
         // 메뉴 이미지 처리
-        List<MenuDTO> menus = restaurantDTO.getMenus();
-        if (menuImages != null && !menuImages.isEmpty()) {
-            for (int i = 0; i < menus.size(); i++) {
-                MenuDTO menu = menus.get(i);
-                if (menu.getId() != null) {
-                    // 기존 메뉴 업데이트
-                    MultipartFile menuImage = menuImages.get(i);
-                    if (menuImage != null && !menuImage.isEmpty()) {
-                        String menuImageUrl = fileService.uploadFiles(List.of(menuImage), "menu-images").get(0).getUploadFileUrl();
-                        menu.setImg(menuImageUrl);
-                    } else {
-                        // 기존 이미지가 null이 아닌 경우 기존 이미지를 유지
-                        MenuDTO existingMenu = restaurantManageService.getMenuById(menu.getId());
-                        if (existingMenu != null && existingMenu.getImg() != null) {
-                            menu.setImg(existingMenu.getImg());
-                        }
-                    }
+        // 메뉴를 추가했을 경우에 아이디 때문에 문제생기는걸 해결하고자,,,, 건드려보았던 수리작업
+        menuImages.forEach((key, file) -> {
+            if (file != null && !file.isEmpty()) {
+                String menuName = key.replace("menuImages[", "").replace("]", "");  // key에서 메뉴 이름 추출
+                Optional<MenuDTO> menu = restaurantDTO.getMenus().stream()
+                        .filter(m -> m.getName().equals(menuName))  // 메뉴 이름으로 필터링
+                        .findFirst();
+                if (menu.isPresent()) {
+                    String menuImageUrl = fileService.uploadFiles(List.of(file), "menu-images").get(0).getUploadFileUrl();
+                    menu.get().setImg(menuImageUrl);
                 } else {
-                    // 새로운 메뉴
-                    MultipartFile menuImage = menuImages.get(i);
-                    if (menuImage != null && !menuImage.isEmpty()) {
-                        String menuImageUrl = fileService.uploadFiles(List.of(menuImage), "menu-images").get(0).getUploadFileUrl();
-                        menu.setImg(menuImageUrl);
-                    }
+                    // 해당 이름의 메뉴가 없는 경우 로그 출력 또는 다른 처리
+                    log.warn("No menu found with the name: {}", menuName);
+                }
+            }
+        });
+
+        // 기존 메뉴 ID 설정
+        if (existingRestaurant != null && existingRestaurant.getMenus() != null) {
+            for (int i = 0; i < restaurantDTO.getMenus().size(); i++) {
+                if (i < existingRestaurant.getMenus().size()) {
+                    MenuDTO existingMenu = existingRestaurant.getMenus().get(i);
+                    restaurantDTO.getMenus().get(i).setId(existingMenu.getId());
                 }
             }
         }
+        log.info("최후의 식당디티오"+restaurantDTO);
+        RestaurantManageDTO newRestaurant = restaurantManageService.updateRestaurant(id, restaurantDTO);
+        log.info("최후의최후의 식당디티오"+newRestaurant);
+//        restaurantDTO.setId(id);
+        return ResponseEntity.ok(newRestaurant);
 
-        restaurantDTO.setId(id);
-        RestaurantManageDTO updatedRestaurant = restaurantManageService.updateRestaurant(id, restaurantDTO);
-        return ResponseEntity.ok(updatedRestaurant);
     }
 
 

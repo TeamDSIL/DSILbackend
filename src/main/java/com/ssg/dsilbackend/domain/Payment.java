@@ -1,5 +1,6 @@
 package com.ssg.dsilbackend.domain;
 
+import com.ssg.dsilbackend.dto.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,5 +48,10 @@ public class Payment {
 
     @Column(name = "buyer_tel")
     private String buyerTel;
+
+    @Column(name = "payment_status")
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
 }
 
