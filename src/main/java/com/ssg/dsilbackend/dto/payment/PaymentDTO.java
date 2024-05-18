@@ -16,7 +16,6 @@ public class PaymentDTO {
     private String name;
     private Long amount;
     private LocalDateTime paymentTime;
-    private String merchantUid;
     private String buyerEmail;
     private String buyerName;
     private String buyerTel;
