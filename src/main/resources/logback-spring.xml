@@ -5,6 +5,7 @@
         <property resource="application.properties"/>
         <!-- log file path -->
         <property name="LOG_PATH" value="/Users/fabul/log"/>
+
         <!-- log file name -->
         <property name="LOG_FILE_NAME" value="DSILbackend"/>
         <!-- err log file name -->
