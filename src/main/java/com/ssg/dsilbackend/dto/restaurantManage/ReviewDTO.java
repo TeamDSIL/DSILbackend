@@ -2,16 +2,19 @@ package com.ssg.dsilbackend.dto.restaurantManage;
 
 import com.ssg.dsilbackend.domain.Reply;
 import com.ssg.dsilbackend.domain.Reservation;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
 public class ReviewDTO {
     private Long id;
-    private Reply reply;
+    private Long replyId;
+    private String replyContent;
 
-    private Reservation reservation;
+    private Long reservationId;
 
     private String content;
 
@@ -21,5 +24,6 @@ public class ReviewDTO {
 
     private boolean deleteStatus;
 
-    private byte[] img;
+    private String img;
+    private String reservationName;
 }

@@ -34,3 +34,7 @@ build/
 
 # Ignore application properties
 /application.properties
+
+# Security
+/application-secret.yml
+

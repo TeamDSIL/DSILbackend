@@ -24,4 +24,8 @@ public class Facility {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    public void setFacilityName(FacilityName name){
+        this.name = name;
+    }
 }

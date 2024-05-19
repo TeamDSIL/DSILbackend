@@ -1,5 +1,10 @@
 package com.ssg.dsilbackend.dto.restaurantManage;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class AvailableTimeDTO {
     private Long id;
     private String availableTime; // Enum 값은 문자열로 전환

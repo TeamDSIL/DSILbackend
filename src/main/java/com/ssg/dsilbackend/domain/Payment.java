@@ -57,3 +57,4 @@ public class Payment {
     private Long pointUsage;
 
 }
+
