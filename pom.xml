@@ -122,7 +122,6 @@
 		</dependency>
 
 
-
 <!--		예측모델 머신러닝 소프트웨어 웨카 주입-->
 		<!-- Weka 기본 라이브러리 -->
 		<dependency>
@@ -140,6 +139,7 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/timeseriesForecasting1.1.27.jar</systemPath>
 		</dependency>
+
 
 
 	</dependencies>
