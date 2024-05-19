@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 
 @Entity
@@ -60,6 +59,10 @@ public class Reservation {
 
     public void setReservationStateName(ReservationStateName state) {
         this.reservationStateName = state;
+    }
+
+    public void cancelReservationStateName(ReservationStateName stateName){
+        this.reservationStateName = stateName;
     }
 
 }

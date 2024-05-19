@@ -1,12 +1,15 @@
 package com.ssg.dsilbackend.service;
 
 import com.ssg.dsilbackend.domain.Members;
+import com.ssg.dsilbackend.domain.Payment;
 import com.ssg.dsilbackend.domain.Reservation;
 import com.ssg.dsilbackend.domain.Restaurant;
 import com.ssg.dsilbackend.dto.AvailableTimeTable;
+import com.ssg.dsilbackend.dto.PaymentStatus;
 import com.ssg.dsilbackend.dto.ReservationStateName;
 import com.ssg.dsilbackend.dto.reserve.ReserveDTO;
 import com.ssg.dsilbackend.repository.MemberRepository;
+import com.ssg.dsilbackend.repository.PaymentRepository;
 import com.ssg.dsilbackend.repository.ReservationRepository;
 import com.ssg.dsilbackend.repository.RestaurantListRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,6 +31,7 @@ public class ReserveService {
     private final RestaurantListRepository restaurantRepository;
     private final MimeMessageHelperService mimeMessageHelperService;
     private final ReservationRepository reservationRepository;
+    private final PaymentRepository paymentRepository;
 
     public Long processReservation(ReserveDTO reserveDTO) {
         try {
@@ -83,12 +87,15 @@ public class ReserveService {
         }
     }
 
-    public void cancelReservation(Long reservationId) {
+    public void cancelReservation(ReserveDTO reserveDTO) {
         try {
+            Long reservationId = reserveDTO.getReservationId();
             Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Reservation Not Found with ID: " + reservationId));
-            reservation.setReservationStateName(ReservationStateName.CANCELED);
-            Reservation cancel = reservationRepository.save(reservation);
-            log.info("예약 상태 취소로 변경 : " + cancel.getId() );
+            reservation.cancelReservationStateName(ReservationStateName.CANCELED);
+            reservationRepository.save(reservation);
+            Payment payment = paymentRepository.findByReservation(reservation).orElseThrow(() -> new EntityNotFoundException("Payment Not Found with ID: " + reservationId));
+            payment.cancelPaymentStatus(PaymentStatus.CANCELED);
+            paymentRepository.save(payment);
         }catch (Exception e){
             log.error(e.getMessage());
             throw new RuntimeException("Error canceling reservation", e);        }

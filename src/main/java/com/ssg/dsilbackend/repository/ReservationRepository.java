@@ -20,9 +20,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     void deleteExpiredReservationsAndAssociatedReviews();
 
     @Modifying(clearAutomatically = true)
-    @Query("DELETE FROM Reservation r WHERE r.reservationStateName = 'CANCELED' AND r.createdTime <= :cutoffDate")
-    void deleteExpiredReservation(@Param("cutoffDate") LocalDateTime cutoffDate);
-
+    @Query("DELETE FROM Reservation r WHERE r.reservationStateName = 'CANCELED' AND r.createdTime <= :ExpiredDate")
+    void deleteExpiredReservation(@Param("ExpiredDate") LocalDateTime ExpiredDate);
 
 }
 
