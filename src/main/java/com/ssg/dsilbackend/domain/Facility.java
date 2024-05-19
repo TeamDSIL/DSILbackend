@@ -1,5 +1,6 @@
 package com.ssg.dsilbackend.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ssg.dsilbackend.dto.FacilityName;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,7 @@ public class Facility {
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
+    @JsonBackReference
     private Restaurant restaurant;
 
     public void setFacilityName(FacilityName name){
