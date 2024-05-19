@@ -122,7 +122,6 @@
 		</dependency>
 
 
-
 <!--		예측모델 머신러닝 소프트웨어 웨카 주입-->
 		<!-- Weka 기본 라이브러리 -->
 		<dependency>
@@ -145,6 +144,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-logging</artifactId>
 		</dependency>
+
 
 
 	</dependencies>
