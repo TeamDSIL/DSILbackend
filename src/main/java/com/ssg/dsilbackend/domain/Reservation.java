@@ -61,10 +61,6 @@ public class Reservation {
         this.reservationStateName = state;
     }
 
-    public void cancelReservationStateName(ReservationStateName stateName){
-        this.reservationStateName = stateName;
-    }
-
 }
 
 

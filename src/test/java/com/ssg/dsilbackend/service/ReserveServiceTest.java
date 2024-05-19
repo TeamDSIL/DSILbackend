@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.*;
-
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -24,10 +22,8 @@ public class ReserveServiceTest {
     private ReservationScheduler reservationScheduler;
 
     @Autowired
-    private ReservationRepository reservationRepository;
-
-    @Autowired
     private ReserveService reserveService;
+
 
     @Mock
     private Clock clock;
@@ -44,7 +40,7 @@ public class ReserveServiceTest {
     @DisplayName("CancelReservation")
     @Rollback(false)
     public void testCancelReservation() {
-        Long reservationId = 136L;
+        Long reservationId = 132L;
         ReserveDTO reserveDTO = new ReserveDTO();
         reserveDTO.setReservationId(reservationId);
         reserveService.cancelReservation(reserveDTO);
@@ -53,9 +49,10 @@ public class ReserveServiceTest {
 
     @Test
     @DisplayName("스케줄러 테스트")
+    @Transactional
     @Rollback(false)
-    public void testScheduler() {
-        reservationScheduler.deleteCanceledReservation();
+    public void testUpdateReservationStatusToCompleted() {
+        reservationScheduler.updateReservationStatusToCompleted();
     }
-}
 
+}

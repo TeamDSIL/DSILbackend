@@ -91,7 +91,7 @@ public class ReserveService {
         try {
             Long reservationId = reserveDTO.getReservationId();
             Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Reservation Not Found with ID: " + reservationId));
-            reservation.cancelReservationStateName(ReservationStateName.CANCELED);
+            reservation.setReservationStateName(ReservationStateName.CANCELED);
             reservationRepository.save(reservation);
             Payment payment = paymentRepository.findByReservation(reservation).orElseThrow(() -> new EntityNotFoundException("Payment Not Found with ID: " + reservationId));
             payment.cancelPaymentStatus(PaymentStatus.CANCELED);
