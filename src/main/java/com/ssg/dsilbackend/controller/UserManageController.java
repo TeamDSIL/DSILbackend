@@ -145,7 +145,7 @@ public class UserManageController {
         userManageService.removeRestaurantByName(restaurantName);
     }
 
-
+// 식당등록
     @PostMapping("/registerRestaurant")
     public ResponseEntity<?> registerRestaurant(
             @ModelAttribute RestaurantRegisterDTO restaurantRegisterDTO) {

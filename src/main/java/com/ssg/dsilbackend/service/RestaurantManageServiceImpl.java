@@ -169,7 +169,7 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
                         .filter(existingMenu -> existingMenu.getId().equals(dto.getId()))
                         .findFirst()
                         .ifPresent(existingMenu-> {
-                            existingMenu.updateMenu(dto.getName(), dto.getPrice(), dto.getImg(), dto.getMenuInfo());
+                            existingMenu.updateMenu(dto.getId(), dto.getName(), dto.getPrice(), dto.getImg(), dto.getMenuInfo());
                             menuRepository.save(existingMenu);
                         });
             }
@@ -435,7 +435,22 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
                 .collect(Collectors.toList());
     }
 
-    //리뷰에 자동으로 답글달기
+    public MenuDTO getMenuById(Long id) {
+        Optional<Menu> optionalMenu = menuRepository.findById(id);
+        if (optionalMenu.isPresent()) {
+            Menu menu = optionalMenu.get();
+            return MenuDTO.builder()
+                    .id(menu.getId())
+                    .name(menu.getName())
+                    .price(menu.getPrice())
+                    .img(menu.getImg())
+                    .menuInfo(menu.getMenuInfo())
+                    .restaurantId(menu.getRestaurant().getId())
+                    .build();
+        } else {
+            return null; // or throw an exception
+        }
+    }
 
 
 
