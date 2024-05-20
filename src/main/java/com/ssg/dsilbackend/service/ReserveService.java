@@ -54,7 +54,7 @@ public class ReserveService {
 
             Reservation reservation = Reservation.builder()
                     .createdTime(LocalDateTime.now())
-                    .reservationTime(AvailableTimeTable.AFTERNOON_1)
+                    .reservationTime(reserveDTO.getReservationTime())
                     .reservationDate(reserveDTO.getReservationDate())
                     .peopleCount(reserveDTO.getPeopleCount())
                     .reservationStateName(ReservationStateName.RESERVED)
