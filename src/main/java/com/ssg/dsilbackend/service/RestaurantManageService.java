@@ -48,6 +48,9 @@ public interface RestaurantManageService {
 
     MenuDTO getMenuById(Long id);
 
+    Map<Integer, Long> getMonthlyReservations(Long restaurantId, int year);
+    Map<Integer, Long> getWeeklyReservations(Long restaurantId, int year);
+    List<ReservationDTO> getReservationsByDateRange(LocalDate startDate, LocalDate endDate);
 
     //리뷰에 자동으로 답글달기
 

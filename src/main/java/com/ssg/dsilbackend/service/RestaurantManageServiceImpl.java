@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.temporal.WeekFields;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,7 @@ import weka.classifiers.evaluation.NumericPrediction;
 import java.io.File;
 import java.io.FileWriter;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -452,8 +450,47 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
         }
     }
 
+    @Override
+    public Map<Integer, Long> getMonthlyReservations(Long restaurantId, int year) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
+        List<Reservation> reservations = reserveRepository.findReservationsByDateRange(startDate, endDate);
 
+        return reservations.stream()
+                .filter(r -> r.getRestaurant().getId().equals(restaurantId))
+                .collect(Collectors.groupingBy(r -> r.getReservationDate().getMonthValue(), Collectors.counting()));
+    }
 
+    @Override
+    public Map<Integer, Long> getWeeklyReservations(Long restaurantId, int year) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        List<Reservation> reservations = reserveRepository.findReservationsByDateRange(startDate, endDate);
 
+        return reservations.stream()
+                .filter(r -> r.getRestaurant().getId().equals(restaurantId))
+                .collect(Collectors.groupingBy(r -> r.getReservationDate().get(weekFields.weekOfWeekBasedYear()), Collectors.counting()));
+    }
+
+    public List<ReservationDTO> getReservationsByDateRange(LocalDate startDate, LocalDate endDate) {
+        List<Reservation> reservations = reserveRepository.findReservationsByDateRange(startDate, endDate);
+        return reservations.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private ReservationDTO convertToDTO(Reservation reservation) {
+        return ReservationDTO.builder()
+                .id(reservation.getId())
+                .restaurantId(reservation.getRestaurant().getId())
+                .memberId(reservation.getMembers().getId())
+                .reservationStateName(reservation.getReservationStateName())
+                .peopleCount(reservation.getPeopleCount())
+                .reservationTime(reservation.getReservationTime())
+                .reservationName(reservation.getReservationName())
+                .requestContent(reservation.getRequestContent())
+                .reservationDate(reservation.getReservationDate())
+                .reservationTel(reservation.getReservationTel())
+                .build();
+    }
 
 }

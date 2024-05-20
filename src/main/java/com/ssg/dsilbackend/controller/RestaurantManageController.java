@@ -259,11 +259,20 @@ public class RestaurantManageController {
     }
 
 
-    //리뷰에 자동으로 답글달기
-//    @PostMapping("/{reviewId}/reply")
-//    public Review addReply(@PathVariable Long reviewId) {
-//        return restaurantManageService.addReplyToReview(reviewId);
-//    }
+    @GetMapping("/monthly/{restaurantId}/{year}")
+    public Map<Integer, Long> getMonthlyReservations(@PathVariable Long restaurantId, @PathVariable int year) {
+        return restaurantManageService.getMonthlyReservations(restaurantId, year);
+    }
+
+    @GetMapping("/weekly/{restaurantId}/{year}")
+    public Map<Integer, Long> getWeeklyReservations(@PathVariable Long restaurantId, @PathVariable int year) {
+        return restaurantManageService.getWeeklyReservations(restaurantId, year);
+    }
+
+    @GetMapping("/by-date-range")
+    public List<ReservationDTO> getReservationsByDateRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+        return restaurantManageService.getReservationsByDateRange(startDate, endDate);
+    }
 
     }
 
