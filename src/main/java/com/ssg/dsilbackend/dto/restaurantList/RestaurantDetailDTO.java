@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuListDTO { // 식당상세페이지 dto
+public class RestaurantDetailDTO { // 식당상세페이지 dto
     private Long id; // 메뉴 아이디
     private String name; // 메뉴 이름(피자, 치킨)
     private Long price; // 메뉴 가격
@@ -25,4 +27,5 @@ public class MenuListDTO { // 식당상세페이지 dto
     private String restaurant_img;
     private Long restaurant_deposit;
     private Long restaurant_table_count;
+    private List<String> facilies;
 }
