@@ -75,8 +75,6 @@ public class MyDiningController {
                                         @RequestParam("reviewScore") Long reviewScore,
                                         @RequestParam("userEmail") String userEmail) {
         try {
-            System.out.println("왜안되는지몰라서 push 하기위해변화주는거임 발견하면 지우셈registerReview ");
-            System.out.println("왜안되는지몰라서 push 하기위해변화주는거임 발견하면 지우셈registerReview ");
             // Save file to S3 and get FileDTO
             List<FileDTO> fileDTOList = fileService.uploadFiles(List.of(file), "reviews");
             String img = fileDTOList.get(0).getUploadFileUrl();
