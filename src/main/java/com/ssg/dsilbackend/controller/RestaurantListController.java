@@ -19,6 +19,7 @@ public class RestaurantListController {
     @GetMapping("/detail/{id}") // 식당아이디 기준으로 식당 상세정보 불러오기
     public ResponseEntity<List<RestaurantDetailDTO>> getMenulist(@PathVariable Long id){
         List<RestaurantDetailDTO> menulist = restaurantListService.findMenus(id);
+        restaurantListService.incrementViewCount(id);  // 뷰 카운트 증가
         return ResponseEntity.ok(menulist);
     }
     @GetMapping("/detail/review/{id}") // 식당 아이디를 기준으로 리뷰 데이터 불러오기
