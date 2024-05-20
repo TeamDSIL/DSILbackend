@@ -38,3 +38,6 @@ build/
 # Security
 /application-secret.yml
 
+#Ignore logback-spring PATH
+/logback-spring.xml
+

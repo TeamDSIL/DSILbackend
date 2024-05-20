@@ -53,5 +53,11 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "point_usage")
+    private Long pointUsage;
+
+    public void cancelPaymentStatus(PaymentStatus paymentStatus){
+        this.paymentStatus = paymentStatus;
+    }
 }
 

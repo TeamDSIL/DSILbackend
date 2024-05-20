@@ -10,10 +10,6 @@ import java.util.List;
 
 public interface ReserveRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByRestaurantId(Long restaurantId);
-    @Query("SELECT r FROM Reservation r WHERE r.restaurant.id = :restaurantId AND r.reservationDate BETWEEN :startDate AND :endDate")
-    List<Reservation> findByRestaurantIdAndReservationDateBetween(
-            @Param("restaurantId") Long restaurantId,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
-    );
+    @Query("SELECT r FROM Reservation r WHERE r.reservationDate BETWEEN :startDate AND :endDate")
+    List<Reservation> findReservationsByDateRange(LocalDate startDate, LocalDate endDate);
 }
