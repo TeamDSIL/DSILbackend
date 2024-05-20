@@ -133,5 +133,14 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                 .collect(Collectors.toList());
     }
 
+    // 뷰 카운트 증가
+    @Override
+    @Transactional
+    public void incrementViewCount(Long id) {
+        restaurantListRepository.incrementViewCount(id);
+    }
+
 }
+
+
 
