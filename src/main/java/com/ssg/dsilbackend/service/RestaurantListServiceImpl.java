@@ -37,7 +37,6 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                     dto.setName(menu.getName());
                     dto.setPrice(menu.getPrice());
 //                    dto.setImg(menu.getImg());
-                    dto.setSubName(menu.getSubName());
                     // 레스토랑 정보 추가
                     dto.setRestaurant_id(restaurant.getId());
                     dto.setRestaurant_name(restaurant.getName());

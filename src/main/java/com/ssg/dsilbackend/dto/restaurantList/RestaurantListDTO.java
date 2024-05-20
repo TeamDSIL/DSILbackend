@@ -13,7 +13,8 @@ public class RestaurantListDTO {
     private String restaurant_address;
     private String restaurant_tel;
     private Crowd restaurant_crowd;
-    private byte[] restaurant_img;
+    private String restaurant_img;
     private Long restaurant_deposit;
     private Long restaurant_table_count;
 }
+

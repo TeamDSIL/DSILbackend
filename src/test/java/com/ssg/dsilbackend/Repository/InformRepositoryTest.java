@@ -1,3 +1,3 @@
-package com.ssg.dsilbackend.Repository;
-public class InformRepositoryTest {
-}
+//package com.ssg.dsilbackend.Repository;
+//public class InformRepositoryTest {
+//}

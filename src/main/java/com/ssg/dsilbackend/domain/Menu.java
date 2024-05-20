@@ -5,9 +5,10 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @ToString
 @Table(name = "restaurant_menu")
 public class Menu {
@@ -22,16 +23,24 @@ public class Menu {
     @Column(name = "price", nullable = false)
     private Long price;
 
+
+
     @Column(name = "menu_img", length = 500)
     private String img;
 
     @Column(name = "menu_info", length = 200)
     private String menuInfo;
 
-    @Column(name = "sub_menu_name", nullable = false)
-    private String subName;
-
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    public void updateMenu(Long id, String name, Long price, String img, String menuInfo){
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.img = img;
+        this.menuInfo = menuInfo;
+    }
+
 }
