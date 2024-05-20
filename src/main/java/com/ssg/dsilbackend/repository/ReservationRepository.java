@@ -36,6 +36,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT r FROM Reservation r WHERE r.reservationDate < :now AND r.reservationStateName = 'RESERVED'")
     List<Reservation> updateReservationStatusToCompleted(@Param("now") LocalDate now,Pageable pageable);
 
+
 //    @Query("DELETE FROM Reservation r WHERE r.reservationStateName = 'CANCELED' AND r.createdTime <= :cutoffDate")
 //    void deleteExpiredReservation(@Param("cutoffDate") LocalDateTime cutoffDate);
 
