@@ -2,6 +2,8 @@ package com.ssg.dsilbackend.jwt;
 
 import com.ssg.dsilbackend.domain.Refresh;
 import com.ssg.dsilbackend.repository.RefreshRepository;
+import com.ssg.dsilbackend.security.CustomUserDetails;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,15 +46,19 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
+    //    public Boolean isExpired(String token) {
+//        try {
+//            Date expiration = Jwts.parser().verifyWith(secretKey).build().parseClaimsJws(token).getBody().getExpiration();
+//            log.debug("Token expiration time: {}", expiration);
+//            return expiration.before(new Date());
+//        } catch (Exception e) {
+//            log.error("Error parsing JWT token: ", e);
+//            return true; // 토큰이 유효하지 않으면 만료된 것으로 간주
+//        }
+//    }
     public Boolean isExpired(String token) {
-        try {
-            Date expiration = Jwts.parser().verifyWith(secretKey).build().parseClaimsJws(token).getBody().getExpiration();
-            log.debug("Token expiration time: {}", expiration);
-            return expiration.before(new Date());
-        } catch (Exception e) {
-            log.error("Error parsing JWT token: ", e);
-            return true; // 토큰이 유효하지 않으면 만료된 것으로 간주
-        }
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
     private String createToken(Map<String, Object> claims, Long expiredMs) {
@@ -71,18 +77,24 @@ public class JWTUtil {
     }
 
     public void createJWT(HttpServletResponse response, Authentication authentication) {
-        String email = authentication.getName();
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String name = userDetails.getUsername();
+        String email = userDetails.getEmail();
         String role = authentication.getAuthorities().iterator().next().getAuthority();
+
 
         Map<String, Object> accessClaims = new HashMap<>();
         accessClaims.put("email", email);
         accessClaims.put("category", "access");
         accessClaims.put("role", role);
+        accessClaims.put("name", name);
 
         Map<String, Object> refreshClaims = new HashMap<>();
         refreshClaims.put("email", email);
         refreshClaims.put("category", "refresh");
         refreshClaims.put("role", role);
+        accessClaims.put("name", name);
 
         String accessToken = createToken(accessClaims, 600000L);
         String refreshToken = createToken(refreshClaims, 86400000L);

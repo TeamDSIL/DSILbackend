@@ -242,8 +242,5 @@ public class UserManageController {
             System.out.println("댓글 삭제 중 오류가 발생했습니다: " + e.getMessage());
             return ResponseEntity.badRequest().body("댓글 삭제에 실패했습니다.");
         }
-
-
     }
-
 }
