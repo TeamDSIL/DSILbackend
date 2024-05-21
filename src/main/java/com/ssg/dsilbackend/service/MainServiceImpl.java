@@ -53,7 +53,7 @@ public class MainServiceImpl implements MainService {
     public List<ToptenDTO> getTopViews(){
         Pageable topTen = PageRequest.of(0, 10);
         return restaurantRepository.findAllByOrderByCountDesc(topTen).stream()
-                .map(restaurant -> new ToptenDTO(restaurant.getId(), restaurant.getName(), restaurant.getImg()))
+                .map(restaurant -> new ToptenDTO(restaurant.getId(), restaurant.getName(), restaurant.getImg(), restaurant.getDescription()))
                 .collect(Collectors.toList());
     }
 
@@ -61,14 +61,14 @@ public class MainServiceImpl implements MainService {
     public List<ToptenDTO> getTopReservations() {
         Pageable topTen = PageRequest.of(0, 10);
         return reservationRepository.findTopByReservations(topTen).stream()
-                .map(restaurant -> new ToptenDTO(restaurant.getId(), restaurant.getName(), restaurant.getImg()))
+                .map(restaurant -> new ToptenDTO(restaurant.getId(), restaurant.getName(), restaurant.getImg(), restaurant.getDescription()))
                 .collect(Collectors.toList());
     }
     @Override
     public List<ToptenDTO> getTopBookmarks() {
         Pageable topTen = PageRequest.of(0, 10);
         return bookmarkRepository.findTopByBookmarks(topTen).stream()
-                .map(restaurant -> new ToptenDTO(restaurant.getId(), restaurant.getName(), restaurant.getImg()))
+                .map(restaurant -> new ToptenDTO(restaurant.getId(), restaurant.getName(), restaurant.getImg(), restaurant.getDescription()))
                 .collect(Collectors.toList());
     }
 }
