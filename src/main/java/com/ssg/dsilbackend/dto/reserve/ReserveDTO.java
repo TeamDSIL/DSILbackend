@@ -1,5 +1,6 @@
 package com.ssg.dsilbackend.dto.reserve;
 
+import com.ssg.dsilbackend.dto.ReservationStateName;
 import lombok.Getter;
 import lombok.Setter;
 

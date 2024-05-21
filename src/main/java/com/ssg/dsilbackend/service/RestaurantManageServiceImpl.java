@@ -3,6 +3,7 @@ package com.ssg.dsilbackend.service;
 import com.ssg.dsilbackend.domain.*;
 import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import com.ssg.dsilbackend.dto.Crowd;
+import com.ssg.dsilbackend.dto.ReservationStateName;
 import com.ssg.dsilbackend.dto.restaurantManage.*;
 import com.ssg.dsilbackend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -278,7 +279,7 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
 
     @Override
     public List<ReservationDTO> getReservationList(Long restaurantId) {
-        List<Reservation> reservations = reserveRepository.findByRestaurantId(restaurantId);
+        List<Reservation> reservations = reserveRepository.findByRestaurantIdAndReservationStateName(restaurantId, ReservationStateName.RESERVED);
         return reservations.stream()
                 .map(this::convertToReserveDto)
                 .collect(Collectors.toList());
@@ -288,7 +289,7 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
                 .id(reservation.getId())
                 .restaurantId(reservation.getRestaurant().getId())
                 .memberId(reservation.getMembers().getId())
-                .reservationStateName(reservation.getReservationStateName())
+                .reservationStateName(ReservationStateName.valueOf(reservation.getReservationStateName().name()))
                 .peopleCount(reservation.getPeopleCount())
                 .reservationTime(reservation.getReservationTime())
                 .reservationName(reservation.getReservationName())
