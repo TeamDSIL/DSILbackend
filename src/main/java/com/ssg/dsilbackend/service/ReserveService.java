@@ -31,7 +31,7 @@ public class ReserveService {
     private final RestaurantListRepository restaurantRepository;
     private final MimeMessageHelperService mimeMessageHelperService;
     private final ReservationRepository reservationRepository;
-    private final PaymentRepository paymentRepository;
+    private final PaymentService paymentService;
 
     public Long processReservation(ReserveDTO reserveDTO) {
         try {
@@ -87,15 +87,12 @@ public class ReserveService {
         }
     }
 
-    public void cancelReservation(ReserveDTO reserveDTO) {
+    public void cancelReservation(Long reservationId) {
         try {
-            Long reservationId = reserveDTO.getReservationId();
             Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Reservation Not Found with ID: " + reservationId));
             reservation.setReservationStateName(ReservationStateName.CANCELED);
             reservationRepository.save(reservation);
-            Payment payment = paymentRepository.findByReservation(reservation).orElseThrow(() -> new EntityNotFoundException("Payment Not Found with ID: " + reservationId));
-            payment.cancelPaymentStatus(PaymentStatus.CANCELED);
-            paymentRepository.save(payment);
+            paymentService.refundPayment(reservationId);
         }catch (Exception e){
             log.error(e.getMessage());
             throw new RuntimeException("Error canceling reservation", e);        }

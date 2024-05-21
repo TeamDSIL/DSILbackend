@@ -56,6 +56,9 @@ public class Payment {
     @Column(name = "point_usage")
     private Long pointUsage;
 
+    @Column(name="imp_uid")
+    private String impUid;
+
     public void cancelPaymentStatus(PaymentStatus paymentStatus){
         this.paymentStatus = paymentStatus;
     }
