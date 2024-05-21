@@ -5,15 +5,12 @@ import com.ssg.dsilbackend.domain.*;
 import com.ssg.dsilbackend.dto.PermissionRole;
 import com.ssg.dsilbackend.dto.userManage.OwnerManageDTO;
 import com.ssg.dsilbackend.dto.userManage.RestaurantRegisterDTO;
-import com.ssg.dsilbackend.dto.userManage.ReviewManageDTO;
 import com.ssg.dsilbackend.dto.userManage.UserManageDTO;
 import com.ssg.dsilbackend.repository.*;
 import com.ssg.dsilbackend.dto.CategoryName;
 import com.ssg.dsilbackend.dto.Crowd;
 import com.ssg.dsilbackend.dto.FacilityName;
-import com.ssg.dsilbackend.dto.PermissionRole;
 import com.ssg.dsilbackend.dto.userManage.*;
-import com.ssg.dsilbackend.repository.*;
 import jakarta.transaction.Transactional;
 
 import lombok.Builder;
@@ -40,9 +37,7 @@ public class UserManageServiceImpl implements UserManageService {
     private final ReplyManageRepository replyManageRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RestaurantManageRepository restaurantManageRepository;
-
     private final MenuRepository menuRepository;
-
     private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
     private final PointManageRepository pointManageRepository;
