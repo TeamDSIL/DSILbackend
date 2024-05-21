@@ -13,4 +13,5 @@ public class ToptenDTO {
     private Long restaurantId;
     private String name;
     private String img;
+    private String description;
 }
