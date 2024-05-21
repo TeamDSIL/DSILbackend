@@ -165,16 +165,6 @@ public class RestaurantManageController {
         }
     }
 
-    //예약에 해당하는 review를 찾는 메소드
-//    @GetMapping("/{reservation-id}/review")
-//    public ResponseEntity<ReviewDTO> getReview(@PathVariable Reservation reservation) {
-//        ReviewDTO reviewDTO = restaurantManageService.getReview(reservation);
-//        if (reviewDTO.isDeleteStatus()) {
-//            return ResponseEntity.noContent().build();
-//        }
-//        return  ResponseEntity.ok(reviewDTO);
-//    }
-
     //해당 리뷰에 답글을 작성하는 메소드
     @PostMapping("/reviews/{review-id}")
     public ResponseEntity<ReplyDTO> createReply(@PathVariable("review-id") Long reviewId, @RequestBody Map<String, String> request) {
@@ -274,10 +264,4 @@ public class RestaurantManageController {
         return restaurantManageService.getReservationsByDateRange(startDate, endDate);
     }
 
-    }
-
-
-
-
-
-
+}

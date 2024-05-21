@@ -1,6 +1,7 @@
 package com.ssg.dsilbackend.dto.reserve;
 
-import com.ssg.dsilbackend.dto.ReservationStateName;
+
+import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +18,7 @@ public class ReserveDTO {
     private Long memberId;
     private String reservationStateName;
     private int peopleCount;
-    private String reservationTime;
+    private AvailableTimeTable reservationTime;
     private String reservationName;
     private String requestContent;
     private LocalDate reservationDate;

@@ -27,7 +27,12 @@
 
 
 	<dependencies>
-<!--		<dependency>-->
+		<dependency>
+
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
 <!--			<groupId>commons-logging</groupId>-->
 <!--			<artifactId>commons-logging</artifactId>-->
 <!--			<version>1.2</version>-->
@@ -60,9 +65,15 @@
 			<artifactId>aws-java-sdk-s3</artifactId>
 			<version>1.11.238</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.modelmapper</groupId>
@@ -87,6 +98,10 @@
 			<groupId>com.github.iamport</groupId>
 			<artifactId>iamport-rest-client-java</artifactId>
 			<version>0.2.23</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
 
 		<dependency>
@@ -122,6 +137,14 @@
 		</dependency>
 
 
+<!--		문자 서비스 추후 구현 예정-->
+<!--		<dependency>-->
+<!--			<groupId>net.nurigo</groupId>-->
+<!--			<artifactId>sdk</artifactId>-->
+<!--			<version>4.3.0</version>-->
+<!--		</dependency>-->
+
+
 <!--		예측모델 머신러닝 소프트웨어 웨카 주입-->
 		<!-- Weka 기본 라이브러리 -->
 		<dependency>
@@ -144,7 +167,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-logging</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 
 
 	</dependencies>

@@ -56,5 +56,8 @@ public class Payment {
     @Column(name = "point_usage")
     private Long pointUsage;
 
+    public void cancelPaymentStatus(PaymentStatus paymentStatus){
+        this.paymentStatus = paymentStatus;
+    }
 }
 
