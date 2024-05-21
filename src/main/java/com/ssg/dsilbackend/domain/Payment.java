@@ -1,5 +1,6 @@
 package com.ssg.dsilbackend.domain;
 
+import com.ssg.dsilbackend.dto.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,8 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "payment")
 public class Payment {
     @Id
@@ -49,5 +49,15 @@ public class Payment {
     @Column(name = "buyer_tel")
     private String buyerTel;
 
+    @Column(name = "payment_status")
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+    @Column(name = "point_usage")
+    private Long pointUsage;
+
+    public void cancelPaymentStatus(PaymentStatus paymentStatus){
+        this.paymentStatus = paymentStatus;
+    }
 }
 

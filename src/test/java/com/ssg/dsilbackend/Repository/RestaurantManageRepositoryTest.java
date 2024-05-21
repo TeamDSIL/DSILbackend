@@ -1,4 +1,4 @@
-package com.ssg.dsilbackend.Repository;
-
-public class RestaurantManageRepositoryTest {
-}
+//package com.ssg.dsilbackend.Repository;
+//
+//public class RestaurantManageRepositoryTest {
+//}

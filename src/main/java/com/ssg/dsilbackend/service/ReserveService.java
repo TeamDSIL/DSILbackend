@@ -1,74 +1,83 @@
 package com.ssg.dsilbackend.service;
 
 import com.ssg.dsilbackend.domain.Members;
+import com.ssg.dsilbackend.domain.Payment;
 import com.ssg.dsilbackend.domain.Reservation;
 import com.ssg.dsilbackend.domain.Restaurant;
 import com.ssg.dsilbackend.dto.AvailableTimeTable;
+import com.ssg.dsilbackend.dto.PaymentStatus;
 import com.ssg.dsilbackend.dto.ReservationStateName;
 import com.ssg.dsilbackend.dto.reserve.ReserveDTO;
 import com.ssg.dsilbackend.repository.MemberRepository;
-import com.ssg.dsilbackend.repository.ReserveRepository;
+import com.ssg.dsilbackend.repository.PaymentRepository;
+import com.ssg.dsilbackend.repository.ReservationRepository;
 import com.ssg.dsilbackend.repository.RestaurantListRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-
-@Transactional
+@Service
 @RequiredArgsConstructor
 @Log4j2
-@Service
+@Transactional
 public class ReserveService {
 
-    private final ReserveRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final RestaurantListRepository restaurantRepository;
     private final MimeMessageHelperService mimeMessageHelperService;
+    private final ReservationRepository reservationRepository;
+    private final PaymentRepository paymentRepository;
 
     public Long processReservation(ReserveDTO reserveDTO) {
         try {
-
-            Long memberId = 30L;
-            Long restaurantId = 2L;
+            Long memberId = 44L;
 
             Members member = memberRepository.findById(memberId)
                     .orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + memberId));
 
-            Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                    .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + restaurantId));
+            Restaurant restaurant = restaurantRepository.findById(reserveDTO.getRestaurantId())
+                    .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + reserveDTO.getRestaurantId()));
 
             String name = member.getName();
+            String phone = member.getTel();
+
+            String reservationName = (reserveDTO.getReservationName() == null || reserveDTO.getReservationName().isEmpty())
+                    ? name : reserveDTO.getReservationName();
+
+            String reservationTel = (reserveDTO.getReservationTel() == null || reserveDTO.getReservationTel().isEmpty())
+                    ? phone : reserveDTO.getReservationTel();
 
             Reservation reservation = Reservation.builder()
-                    .reservationTime(AvailableTimeTable.AFTERNOON_1)
+                    .createdTime(LocalDateTime.now())
+                    .reservationTime(reserveDTO.getReservationTime())
                     .reservationDate(reserveDTO.getReservationDate())
                     .peopleCount(reserveDTO.getPeopleCount())
                     .reservationStateName(ReservationStateName.RESERVED)
-                    .restaurant(restaurant)
                     .members(member)
+                    .restaurant(restaurant)
                     .requestContent(reserveDTO.getRequestContent())
-                    .reservationTel(reserveDTO.getReservationTel())
-//                    .reservationName(reserveDTO.getReservationName())
-                    .reservationName(name)
+                    .reservationTel(reservationTel)
+                    .reservationName(reservationName)
                     .build();
 
             Reservation savedReservation = reservationRepository.save(reservation);
             Long reservationId = savedReservation.getId();
             log.info("예약 성공 : {}", reservationId);
 
-            LocalDate reservationDate = reservation.getReservationDate();
-            AvailableTimeTable reservationTime = reservation.getReservationTime();
-            int peopleCount = reservation.getPeopleCount();
+            LocalDate reservationDate = savedReservation.getReservationDate();
+            AvailableTimeTable reservationTime = savedReservation.getReservationTime();
+            int peopleCount = savedReservation.getPeopleCount();
 
-            String reservationInfo = "예약 날짜는 : " + reservationDate +"이며 \n" +"예약 시간은 " +reservationTime+"이고 \n" +"예약 인원 수는 " + peopleCount + "명입니다";
+            String reservationInfo = String.format("방문 고객 : %s\n예약 날짜는 : %s이며 \n예약 시간은 %s이고 \n예약 인원 수는 %d명입니다",
+                    reservationName, reservationDate, reservationTime, peopleCount);
 
-            String email = reservation.getMembers().getEmail();
-
-            mimeMessageHelperService.sendEmail(email,reservationInfo);
+            String email = savedReservation.getMembers().getEmail();
+            mimeMessageHelperService.sendEmail(email, reservationInfo);
 
             return reservationId;
 
@@ -78,41 +87,17 @@ public class ReserveService {
         }
     }
 
-    public void cancelReservation(ReserveDTO reserveDTO){
+    public void cancelReservation(ReserveDTO reserveDTO) {
         try {
-
-            Long memberId = 30L;
-            Long restaurantId = 2L;
-
-            Members member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + memberId));
-
-            Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                    .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + restaurantId));
-
-            String name = member.getName();
-
-            Reservation reservation = Reservation.builder()
-                    .reservationTime(AvailableTimeTable.AFTERNOON_1)
-                    .reservationDate(reserveDTO.getReservationDate())
-                    .peopleCount(reserveDTO.getPeopleCount())
-                    .reservationStateName(ReservationStateName.CANCELED)
-                    .restaurant(restaurant)
-                    .members(member)
-                    .requestContent(reserveDTO.getRequestContent())
-                    .reservationTel(reserveDTO.getReservationTel())
-//                    .reservationName(reserveDTO.getReservationName())
-                    .reservationName(name)
-                    .build();
-
-            Reservation savedReservation = reservationRepository.save(reservation);
-            Long reservationId = savedReservation.getId();
-            log.info("예약 취소 : {}", reservationId);
-
-
-        } catch (Exception e) {
+            Long reservationId = reserveDTO.getReservationId();
+            Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Reservation Not Found with ID: " + reservationId));
+            reservation.setReservationStateName(ReservationStateName.CANCELED);
+            reservationRepository.save(reservation);
+            Payment payment = paymentRepository.findByReservation(reservation).orElseThrow(() -> new EntityNotFoundException("Payment Not Found with ID: " + reservationId));
+            payment.cancelPaymentStatus(PaymentStatus.CANCELED);
+            paymentRepository.save(payment);
+        }catch (Exception e){
             log.error(e.getMessage());
-            throw new RuntimeException("예약 취소", e);
-        }
+            throw new RuntimeException("Error canceling reservation", e);        }
     }
 }

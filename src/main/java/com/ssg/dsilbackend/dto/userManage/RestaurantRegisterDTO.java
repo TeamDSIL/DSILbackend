@@ -5,6 +5,7 @@ import com.ssg.dsilbackend.domain.Menu;
 import com.ssg.dsilbackend.domain.Permission;
 import com.ssg.dsilbackend.dto.CategoryName;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,7 +29,8 @@ public class RestaurantRegisterDTO {
     private String postcode; // 식당
     private Long tableCount; //식당
     private Long deposit; // 식당
-    private String img; // 식당
+    private MultipartFile img; // 식당
+    private String imgUrl;
     private String description; // 식당
     private String[] categories; // 식당 // 카테고리
     private List<RegisterMenuDTO> menuDTOs; // 식당 // 메뉴

@@ -16,5 +16,4 @@ public class MenuDTO {
     private String img;
     private String menuInfo;
     private Long restaurantId;
-    private String subName;
 }

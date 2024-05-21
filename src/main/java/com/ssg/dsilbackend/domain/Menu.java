@@ -1,13 +1,15 @@
 package com.ssg.dsilbackend.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @ToString
 @Table(name = "restaurant_menu")
 public class Menu {
@@ -32,9 +34,11 @@ public class Menu {
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
+    @JsonBackReference
     private Restaurant restaurant;
 
-    public void updateMenu(String name, Long price, String img, String menuInfo){
+    public void updateMenu(Long id, String name, Long price, String img, String menuInfo){
+        this.id = id;
         this.name = name;
         this.price = price;
         this.img = img;

@@ -25,7 +25,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findReviewsByRestaurantId(@Param("restaurantId") Long restaurantId);
 
     List<Review> findByReservationRestaurantId(Long restaurantId);
-
+    boolean existsByReservationId(Long reservationId);
 }
 
 

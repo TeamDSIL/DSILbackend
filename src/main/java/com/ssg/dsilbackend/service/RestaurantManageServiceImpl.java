@@ -3,6 +3,7 @@ package com.ssg.dsilbackend.service;
 import com.ssg.dsilbackend.domain.*;
 import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import com.ssg.dsilbackend.dto.Crowd;
+import com.ssg.dsilbackend.dto.ReservationStateName;
 import com.ssg.dsilbackend.dto.restaurantManage.*;
 import com.ssg.dsilbackend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,10 +11,21 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.temporal.WeekFields;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import weka.classifiers.timeseries.WekaForecaster;
+import weka.classifiers.timeseries.core.TSLagUser;
+import weka.core.Instances;
+import weka.core.converters.ArffSaver;
+import weka.core.converters.ConverterUtils.DataSource;
+import weka.classifiers.evaluation.NumericPrediction;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -156,7 +168,7 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
                         .filter(existingMenu -> existingMenu.getId().equals(dto.getId()))
                         .findFirst()
                         .ifPresent(existingMenu-> {
-                            existingMenu.updateMenu(dto.getName(), dto.getPrice(), dto.getImg(), dto.getMenuInfo());
+                            existingMenu.updateMenu(dto.getId(), dto.getName(), dto.getPrice(), dto.getImg(), dto.getMenuInfo());
                             menuRepository.save(existingMenu);
                         });
             }
@@ -267,7 +279,7 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
 
     @Override
     public List<ReservationDTO> getReservationList(Long restaurantId) {
-        List<Reservation> reservations = reserveRepository.findByRestaurantId(restaurantId);
+        List<Reservation> reservations = reserveRepository.findByRestaurantIdAndReservationStateName(restaurantId, ReservationStateName.RESERVED);
         return reservations.stream()
                 .map(this::convertToReserveDto)
                 .collect(Collectors.toList());
@@ -277,7 +289,7 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
                 .id(reservation.getId())
                 .restaurantId(reservation.getRestaurant().getId())
                 .memberId(reservation.getMembers().getId())
-                .reservationStateName(reservation.getReservationStateName())
+                .reservationStateName(ReservationStateName.valueOf(reservation.getReservationStateName().name()))
                 .peopleCount(reservation.getPeopleCount())
                 .reservationTime(reservation.getReservationTime())
                 .reservationName(reservation.getReservationName())
@@ -421,4 +433,65 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
                 .map(this::toMenuDto)
                 .collect(Collectors.toList());
     }
+
+    public MenuDTO getMenuById(Long id) {
+        Optional<Menu> optionalMenu = menuRepository.findById(id);
+        if (optionalMenu.isPresent()) {
+            Menu menu = optionalMenu.get();
+            return MenuDTO.builder()
+                    .id(menu.getId())
+                    .name(menu.getName())
+                    .price(menu.getPrice())
+                    .img(menu.getImg())
+                    .menuInfo(menu.getMenuInfo())
+                    .restaurantId(menu.getRestaurant().getId())
+                    .build();
+        } else {
+            return null; // or throw an exception
+        }
+    }
+
+    @Override
+    public Map<Integer, Long> getMonthlyReservations(Long restaurantId, int year) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
+        List<Reservation> reservations = reserveRepository.findReservationsByDateRange(startDate, endDate);
+
+        return reservations.stream()
+                .filter(r -> r.getRestaurant().getId().equals(restaurantId))
+                .collect(Collectors.groupingBy(r -> r.getReservationDate().getMonthValue(), Collectors.counting()));
+    }
+
+    @Override
+    public Map<Integer, Long> getWeeklyReservations(Long restaurantId, int year) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        List<Reservation> reservations = reserveRepository.findReservationsByDateRange(startDate, endDate);
+
+        return reservations.stream()
+                .filter(r -> r.getRestaurant().getId().equals(restaurantId))
+                .collect(Collectors.groupingBy(r -> r.getReservationDate().get(weekFields.weekOfWeekBasedYear()), Collectors.counting()));
+    }
+
+    public List<ReservationDTO> getReservationsByDateRange(LocalDate startDate, LocalDate endDate) {
+        List<Reservation> reservations = reserveRepository.findReservationsByDateRange(startDate, endDate);
+        return reservations.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private ReservationDTO convertToDTO(Reservation reservation) {
+        return ReservationDTO.builder()
+                .id(reservation.getId())
+                .restaurantId(reservation.getRestaurant().getId())
+                .memberId(reservation.getMembers().getId())
+                .reservationStateName(reservation.getReservationStateName())
+                .peopleCount(reservation.getPeopleCount())
+                .reservationTime(reservation.getReservationTime())
+                .reservationName(reservation.getReservationName())
+                .requestContent(reservation.getRequestContent())
+                .reservationDate(reservation.getReservationDate())
+                .reservationTel(reservation.getReservationTel())
+                .build();
+    }
+
 }

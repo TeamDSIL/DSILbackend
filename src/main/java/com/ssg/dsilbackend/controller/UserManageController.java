@@ -1,16 +1,25 @@
 package com.ssg.dsilbackend.controller;
 
 
-import com.ssg.dsilbackend.dto.userManage.OwnerManageDTO;
-import com.ssg.dsilbackend.dto.userManage.RestaurantRegisterDTO;
-import com.ssg.dsilbackend.dto.userManage.ReviewReplyDTO;
-import com.ssg.dsilbackend.dto.userManage.UserManageDTO;
+import com.ssg.dsilbackend.dto.File.FileDTO;
+import com.ssg.dsilbackend.dto.userManage.*;
+import com.ssg.dsilbackend.jwt.JWTUtil;
+import com.ssg.dsilbackend.service.FileService;
 import com.ssg.dsilbackend.service.UserManageService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,21 +31,36 @@ import java.util.Map;
 public class UserManageController {
 
     private final UserManageService userManageService;
-
+    private final FileService fileService;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
 
     // ------------------------------------------------- login
 
     @GetMapping("/loginPage")
-    public String getLogin() {
-        return "login";
+    public void getLogin() {
     }
 
     // 로그인 - post 요청
     @PostMapping("/loginPage")
-    public ResponseEntity<?> postLogin(@RequestBody UserManageDTO userManageDTO) {
+    public ResponseEntity<?> postLogin(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
+        log.info("도착했는지 확인");
+        log.info(loginDTO);
 
-        // 로그인 폼 데이터를 받아 처리하는 로직 작성
-        return ResponseEntity.ok().build(); // 성공했을 경우 응답
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword())
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            jwtUtil.createJWT(response, authentication);
+
+            log.info("JWT 토큰 생성 및 설정 완료");
+            return ResponseEntity.ok().body("로그인 성공");
+        } catch (AuthenticationException e) {
+            log.error("로그인 실패", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패");
+        }
     }
 
     // ------------------------------------------------- signup
@@ -140,14 +164,29 @@ public class UserManageController {
         userManageService.removeRestaurantByName(restaurantName);
     }
 
-
+// 식당등록
     @PostMapping("/registerRestaurant")
-    public ResponseEntity<?> registerRestaurant(@RequestBody RestaurantRegisterDTO restaurantRegisterDTO) {
+    public ResponseEntity<?> registerRestaurant(
+            @ModelAttribute RestaurantRegisterDTO restaurantRegisterDTO) {
         try {
+            System.out.println(restaurantRegisterDTO);
+            // 레스토랑 사진
+            MultipartFile resImg = restaurantRegisterDTO.getImg();
+            List<FileDTO> fileDTOList = fileService.uploadFiles(List.of(resImg), "restaurnat_img");
+            restaurantRegisterDTO.setImgUrl(fileDTOList.get(0).getUploadFileUrl());
+            System.out.println("setImgUrl: "+restaurantRegisterDTO.getImgUrl());
+
+            // 메뉴사진
+            for(int i =0 ; i<restaurantRegisterDTO.getMenuDTOs().size() ; i++ ){
+                MultipartFile menuImg = restaurantRegisterDTO.getMenuDTOs().get(i).getImg();
+                List<FileDTO> menuFileDTOList = fileService.uploadFiles(List.of(menuImg), "menu_img");
+                restaurantRegisterDTO.getMenuDTOs().get(i).setImgUrl(menuFileDTOList.get(0).getUploadFileUrl());
+                System.out.println("setImgUrl: "+i+"번 "+restaurantRegisterDTO.getMenuDTOs().get(i).getImgUrl());
+            }
+
             userManageService.registerRestaurantInfo(restaurantRegisterDTO);
             return ResponseEntity.ok("식당 정보가 성공적으로 등록되었습니다.");
         } catch (Exception e) {
-            // 예외 발생 시, 500 Internal Server Error와 함께 오류 메시지를 반환합니다.
             return ResponseEntity.internalServerError().body("식당 정보 등록 중 오류가 발생했습니다: " + e.getMessage());
         }
     }

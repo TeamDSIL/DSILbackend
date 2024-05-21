@@ -25,6 +25,7 @@ public class MydiningReviewsDTO {
     private String name; // 식당이름
     private LocalDate replyRegisterDate;
     private String restaurantImg;
+    private String reviewImg;
 
     public static MydiningReviewsDTO from(Review review){
         return MydiningReviewsDTO.builder()
@@ -39,6 +40,7 @@ public class MydiningReviewsDTO {
                 .deleteStatus(review.isDeleteStatus())
                 .replyRegisterDate(review.getReply() != null ? review.getReply().getRegisterDate() : null) // Reply 등록 날짜가 null인 경우 처리
                 .restaurantImg(review.getReservation().getRestaurant().getImg())
+                .reviewImg(review.getImg())
                 .build();
     }
 

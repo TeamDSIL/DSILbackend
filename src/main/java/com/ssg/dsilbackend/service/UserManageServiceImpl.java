@@ -252,6 +252,7 @@ public class UserManageServiceImpl implements UserManageService {
     // 등록해줘야 하는 식당
     @Transactional
     public void registerRestaurantInfo(RestaurantRegisterDTO dto) {
+        System.out.println("서비스: "+dto);
 
         // 회원 정보 생성 및 저장
         Permission permission = permissionManageRepository.findByPermission(PermissionRole.OWNER);
@@ -274,7 +275,7 @@ public class UserManageServiceImpl implements UserManageService {
                 .name(dto.getRestaurantName())
                 .address(dto.getRestaurantAddress())
                 .tel(dto.getRestaurantTel())
-                .img(dto.getImg())
+                .img(dto.getImgUrl())
                 .deposit(dto.getDeposit())
                 .tableCount(dto.getTableCount())
                 .crowd(Crowd.AVAILABLE)
@@ -300,7 +301,7 @@ public class UserManageServiceImpl implements UserManageService {
                 Menu menu = Menu.builder()
                         .name(menuDTO.getName())
                         .price(menuDTO.getPrice())
-                        .img(menuDTO.getImg())
+                        .img(menuDTO.getImgUrl())
                         .menuInfo(menuDTO.getMenuInfo())
                         .restaurant(newRestaurant)
                         .build();

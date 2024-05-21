@@ -2,24 +2,22 @@ package com.ssg.dsilbackend.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
+@EnableAsync
 public class MimeMessageHelperService {
 
     private final JavaMailSender javaMailSender;
-
-    @Autowired
-    public MimeMessageHelperService(JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
-    }
 
     @Async
     public void sendEmail(String email, String reservationInfo) throws MessagingException {

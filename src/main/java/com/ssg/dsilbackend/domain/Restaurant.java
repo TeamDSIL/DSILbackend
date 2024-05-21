@@ -1,16 +1,18 @@
 package com.ssg.dsilbackend.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ssg.dsilbackend.dto.Crowd;
 import com.ssg.dsilbackend.dto.userManage.OwnerManageDTO;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Table(name = "restaurant")
 public class Restaurant {
     @Id
@@ -44,9 +46,23 @@ public class Restaurant {
     @Column(name = "restaurant_description", length = 100)
     private String description;
 
+    @Column(name = "view_count")
+    private Long count;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Members member;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Category> categories;
+
+    // JsonManagedReference: Menu와 Facility간 역참조를 막아 무한재귀를 막음
+    @OneToMany(mappedBy = "restaurant")
+    @JsonManagedReference
+    private List<Menu> menus;
+
+    @OneToMany(mappedBy = "restaurant")
+    @JsonManagedReference
+    private List<Facility> facilities;
 
 
     public void updateRestaurantInfo(OwnerManageDTO ownerManageDTO) {
