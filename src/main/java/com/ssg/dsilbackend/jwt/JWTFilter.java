@@ -5,7 +5,6 @@ import com.ssg.dsilbackend.domain.Permission;
 import com.ssg.dsilbackend.dto.PermissionRole;
 import com.ssg.dsilbackend.security.CustomUserDetails;
 import com.ssg.dsilbackend.repository.PermissionManageRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -19,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @RequiredArgsConstructor
 @Log4j2
