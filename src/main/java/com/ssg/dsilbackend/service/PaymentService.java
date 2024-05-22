@@ -22,7 +22,6 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final ReservationRepository reservationRepository;
-    private final MemberRepository memberRepository;
     private final RefundService refundService;
 
     public void savePayment(PaymentDTO paymentDTO, Long reservationId) {
@@ -31,7 +30,7 @@ public class PaymentService {
             Reservation reservation = reservationRepository.findById(reservationId)
                     .orElseThrow(() -> new EntityNotFoundException("reservationId not found with ID: " + reservationId));
 
-            Members members = memberRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("memberId not found with ID: " + reservationId));
+            Members members = reservation.getMembers();
 
             String email = members.getEmail();
             String tel = members.getTel();

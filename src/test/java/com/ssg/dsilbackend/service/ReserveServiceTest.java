@@ -87,4 +87,14 @@ public class ReserveServiceTest {
         String response = refundService.cancelPayment(impUid, reason, token);
         System.out.println("Cancel Payment Response: " + response);
     }
+
+    @Test
+    @Rollback(value = false)
+    public void testCancelReservationMailService() throws Exception {
+        Long reservationId =43L;
+        ReserveDTO reserveDTO = new ReserveDTO();
+        reserveDTO.setReservationId(reservationId);
+        reserveService.cancelReservation(reservationId);
+
+    }
 }
