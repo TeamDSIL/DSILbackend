@@ -1,12 +1,14 @@
 package com.ssg.dsilbackend.service;
 
 import com.ssg.dsilbackend.domain.Members;
+import com.ssg.dsilbackend.domain.Point;
 import com.ssg.dsilbackend.domain.Reservation;
 import com.ssg.dsilbackend.domain.Restaurant;
 import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import com.ssg.dsilbackend.dto.ReservationStateName;
 import com.ssg.dsilbackend.dto.reserve.ReserveDTO;
 import com.ssg.dsilbackend.repository.MemberRepository;
+import com.ssg.dsilbackend.repository.PointManageRepository;
 import com.ssg.dsilbackend.repository.ReservationRepository;
 import com.ssg.dsilbackend.repository.RestaurantListRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,6 +31,7 @@ public class ReserveService {
     private final MimeMessageHelperService mimeMessageHelperService;
     private final ReservationRepository reservationRepository;
     private final PaymentService paymentService;
+    private final PointManageRepository pointManageRepository;
 
     public Long processReservation(ReserveDTO reserveDTO) {
         try {
@@ -63,6 +66,13 @@ public class ReserveService {
             Reservation savedReservation = reservationRepository.save(reservation);
             Long reservationId = savedReservation.getId();
             log.info("예약 성공 : {}", reservationId);
+
+            Point point = member.getPoint();
+            Long currentPoint = point.getCurrentPoint();
+            Long accumulatePoint = point.getAccumulatePoint();
+            point.setCurrentPoint(currentPoint+100);
+            point.setAccumulatePoint(accumulatePoint+100);
+            pointManageRepository.save(point);
 
             LocalDate reservationDate = savedReservation.getReservationDate();
             AvailableTimeTable reservationTime = savedReservation.getReservationTime();
