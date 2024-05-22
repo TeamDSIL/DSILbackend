@@ -14,6 +14,6 @@ public class InformDTO {
     private String contents;
     private LocalDate postDate;
     private LocalDate modifiedDate;
-    private String filePath;
+    private String img;
 }
 

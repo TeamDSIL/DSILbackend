@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @ToString
 @Table(name = "reply")
 public class Reply {
@@ -27,4 +27,5 @@ public class Reply {
 
     @Column(name = "reply_delete_status")
     private Boolean deleteStatus;
+
 }

@@ -8,8 +8,6 @@ import java.util.List;
 
 
 public interface RestaurantManageRepository extends JpaRepository<Restaurant, Long> {
-
-    List<Restaurant> getRestaurantsByMemberId(Long memberId);
     //이 작업으로 findAll()등 메소드 자동으로 생성!
     List<Restaurant> findByMemberId(Long memberId);
 

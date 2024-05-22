@@ -28,4 +28,8 @@ public class AvailableTime {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    public static String getSlot(Object o) {
+        return null;
+    }
 }

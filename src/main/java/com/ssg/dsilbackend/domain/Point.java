@@ -21,4 +21,8 @@ public class Point {
 
     @Column(name = "point_currunt", nullable = false)
     private Long currentPoint;
+
+    public void setCurrentPoint(Long currentPoint){
+        this.currentPoint = currentPoint;
+    }
 }

@@ -1,8 +1,16 @@
 package com.ssg.dsilbackend.dto.restaurantManage;
 
-import lombok.Data;
+import com.ssg.dsilbackend.dto.Crowd;
+import lombok.*;
 
-@Data
+import java.util.List;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class RestaurantManageDTO {
     private Long id;
     private String name;
@@ -10,7 +18,11 @@ public class RestaurantManageDTO {
     private String tel;
     private Long deposit;
     private Long tableCount;
-    private String crowd;
-    private byte[] img;
+    private Crowd crowd;
+    private String img;
+    private String description;
     private Long memberId;
+    private List<CategoryDTO> categories;
+    private List<FacilityDTO> facilities;
+    private List<MenuDTO> menus;
 }

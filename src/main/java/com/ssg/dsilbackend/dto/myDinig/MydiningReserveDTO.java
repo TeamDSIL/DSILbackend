@@ -21,8 +21,9 @@ public class MydiningReserveDTO {
     private long reviewCount;  // 리뷰 수 필드
     private Long reservationId;
     private String restaurantImg;
+    private boolean isReview; // Indicates if a review exists
 
-    public static MydiningReserveDTO from(Reservation entity, Double averageReviewScore, long reviewCount) {
+    public static MydiningReserveDTO from(Reservation entity, Double averageReviewScore, long reviewCount, boolean isReview) {
         return MydiningReserveDTO.builder()
                 .reservationId(entity.getId())
                 .restaurantId(entity.getRestaurant().getId())  // Restaurant ID 설정
@@ -34,8 +35,7 @@ public class MydiningReserveDTO {
                 .averageReviewScore(Math.round(averageReviewScore * 10.0) / 10.0)
                 .reviewCount(reviewCount)
                 .restaurantImg(entity.getRestaurant().getImg())
+                .isReview(isReview) // Set the review status
                 .build();
     }
 }
-
-
