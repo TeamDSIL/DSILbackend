@@ -35,10 +35,8 @@ public class ReserveService {
 
     public Long processReservation(ReserveDTO reserveDTO) {
         try {
-            Long memberId = 44L;
-
-            Members member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + memberId));
+            Members member = memberRepository.findById(reserveDTO.getMemberId())
+                    .orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + reserveDTO.getMemberId()));
 
             Restaurant restaurant = restaurantRepository.findById(reserveDTO.getRestaurantId())
                     .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + reserveDTO.getRestaurantId()));

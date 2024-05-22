@@ -27,21 +27,22 @@ public class PaymentService {
 
     public void savePayment(PaymentDTO paymentDTO, Long reservationId) {
         try {
-            Long memberId = 44L;
-
-            Members member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + memberId));
 
             Reservation reservation = reservationRepository.findById(reservationId)
                     .orElseThrow(() -> new EntityNotFoundException("reservationId not found with ID: " + reservationId));
 
+            Members members = memberRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("memberId not found with ID: " + reservationId));
+
+            String email = members.getEmail();
+            String tel = members.getTel();
+            String name = members.getName();
             Payment payment = Payment.builder()
                     .amount(paymentDTO.getAmount())
                     .paymentTime(LocalDateTime.now())
                     .pg(paymentDTO.getPg())
-                    .buyerEmail(member.getEmail())
-                    .buyerName(member.getName())
-                    .buyerTel(member.getTel())
+                    .buyerEmail(email)
+                    .buyerName(name)
+                    .buyerTel(tel)
                     .payMethod(paymentDTO.getPay_method())
                     .paymentTime(LocalDateTime.now())
                     .name(paymentDTO.getName())
