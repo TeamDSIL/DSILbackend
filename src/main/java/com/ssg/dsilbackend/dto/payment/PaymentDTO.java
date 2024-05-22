@@ -22,4 +22,5 @@ public class PaymentDTO {
     private Long reservationId;
     private PaymentStatus paymentStatus;
     private Long pointUsage;
+    private String impUid;
 }
