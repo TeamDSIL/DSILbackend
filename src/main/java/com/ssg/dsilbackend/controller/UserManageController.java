@@ -3,6 +3,7 @@ package com.ssg.dsilbackend.controller;
 
 import com.ssg.dsilbackend.dto.File.FileDTO;
 import com.ssg.dsilbackend.dto.userManage.*;
+import com.ssg.dsilbackend.exception.MemberNotFoundException;
 import com.ssg.dsilbackend.jwt.JWTUtil;
 import com.ssg.dsilbackend.service.FileService;
 import com.ssg.dsilbackend.service.UserManageService;
@@ -79,6 +80,46 @@ public class UserManageController {
     }
 
     // ------------------------------------------------- user
+    @PostMapping("/findEmail")
+    public ResponseEntity<String> findEmail(@RequestBody Map<String, String> payload) {
+        String tel = payload.get("tel");
+        if (tel == null) {
+            log.info("Tel parameter is null");
+        } else {
+            log.info("Received tel: " + tel);
+        }
+        try {
+            String email = userManageService.findEmailByTel(tel);
+            return ResponseEntity.ok(email);
+        } catch (MemberNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+    // 이메일로 인증 코드 발송
+    @PostMapping("/sendCode")
+    public ResponseEntity<String> sendCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        // 인증 코드 생성 및 이메일 발송 로직 추가
+        // 예: String code = codeService.generateCode(email);
+        // emailService.sendEmail(email, code);
+        return ResponseEntity.ok("인증 코드가 전송되었습니다.");
+    }
+
+    // 인증 코드 검증
+    @PostMapping("/verifyCode")
+    public ResponseEntity<String> verifyCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String code = request.get("code");
+        // 인증 코드 검증 로직 추가
+        // 예: boolean isValid = codeService.verifyCode(email, code);
+        boolean isValid = true; // 임시로 설정
+        if (isValid) {
+            return ResponseEntity.ok("인증되었습니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증 코드가 틀렸습니다.");
+        }
+    }
+    // ------------------------------------------------- user
 
     @GetMapping("/userMyPage")
     public UserManageDTO getUserData(@RequestParam String email){
@@ -98,6 +139,8 @@ public class UserManageController {
         userManageService.deleteUserInfo(email);
         log.info("됩니까");
     }
+
+
 
     // ------------------------------------------------- owner
 

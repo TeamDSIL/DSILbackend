@@ -47,4 +47,5 @@ public class CustomOAuth2User implements OAuth2User {
 
         return userManageDTO.getEmail();
     }
+
 }

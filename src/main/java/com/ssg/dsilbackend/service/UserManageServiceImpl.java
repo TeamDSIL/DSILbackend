@@ -130,6 +130,13 @@ public class UserManageServiceImpl implements UserManageService {
 
     }
 
+    @Override
+    public String findEmailByTel(String tel) {
+        Optional<Members> userInfo = userManageRepository.findMembersByTel(tel);
+        Members members = userInfo.orElseThrow(() -> new RuntimeException("User not found"));
+        return members.getEmail();
+    }
+
 //    ----------------------------------------------- Owner
 
     // 하나의 식당 관리자가 여러 식당들을 갖고 있음 -> 식당을 선택할 수 있는 사이드 바
