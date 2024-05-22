@@ -1,6 +1,7 @@
 package com.ssg.dsilbackend.jwt;
 
 import com.ssg.dsilbackend.domain.Refresh;
+import com.ssg.dsilbackend.oAuth2.CustomOAuth2User;
 import com.ssg.dsilbackend.repository.RefreshRepository;
 import com.ssg.dsilbackend.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
@@ -78,10 +79,23 @@ public class JWTUtil {
 
     public void createJWT(HttpServletResponse response, Authentication authentication) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String name = userDetails.getUsername();
-        String email = userDetails.getEmail();
-        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        String name;
+        String email;
+        String role;
+
+        if (authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            name = userDetails.getUsername();
+            email = userDetails.getEmail();
+            role = userDetails.getAuthorities().iterator().next().getAuthority();
+        } else if (authentication.getPrincipal() instanceof CustomOAuth2User) {
+            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            name = oAuth2User.getName();
+            email = oAuth2User.getEmail();
+            role = oAuth2User.getAuthorities().iterator().next().getAuthority();
+        } else {
+            throw new IllegalArgumentException("Unknown principal type: " + authentication.getPrincipal().getClass().getName());
+        }
 
 
         Map<String, Object> accessClaims = new HashMap<>();

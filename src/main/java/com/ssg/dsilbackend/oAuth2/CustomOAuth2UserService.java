@@ -57,11 +57,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .currentPoint(0L)
                 .build();
 
+
         if (existData == null) {
             Members members = Members.builder()
                     .email(oAuth2Response.getEmail())
                     .name(oAuth2Response.getName())
                     .tel("")
+                    .password("")
                     .status(true)
                     .address("")
                     .postcode("")
