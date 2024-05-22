@@ -1,31 +1,15 @@
 package com.ssg.dsilbackend.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.dsilbackend.domain.Refresh;
-import com.ssg.dsilbackend.dto.userManage.LoginDTO;
-import com.ssg.dsilbackend.repository.RefreshRepository;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.util.StreamUtils;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -38,7 +22,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String email = obtainUsername(req);
         String password = obtainPassword(req);
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password, null);
+        CustomAuthenticationToken authToken = new CustomAuthenticationToken(email, password, email);
         return authenticationManager.authenticate(authToken);
 
     }
