@@ -5,7 +5,6 @@ import com.ssg.dsilbackend.dto.userManage.UserManageDTO;
 import com.ssg.dsilbackend.jwt.JWTUtil;
 import com.ssg.dsilbackend.repository.UserManageRepository;
 import com.ssg.dsilbackend.security.CustomUserDetails;
-import com.ssg.dsilbackend.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
