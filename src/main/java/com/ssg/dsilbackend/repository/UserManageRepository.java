@@ -20,6 +20,9 @@ public interface UserManageRepository extends JpaRepository<Members, Long> {
     @Query("SELECT m FROM Members m JOIN m.permission p WHERE p.permission = :permissionRole AND m.status = :status AND m.email = :email")
     Members findMembersByPermissionRoleAndStatusAndEmail(@Param("permissionRole") PermissionRole permissionRole, @Param("status") Boolean status, String email);
 
+//    -----------------------------------oauth2-------------------------------------------------
+
+    Members findByName (String name);
 }
 
 
