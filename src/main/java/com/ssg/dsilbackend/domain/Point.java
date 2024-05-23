@@ -25,4 +25,6 @@ public class Point {
     public void setCurrentPoint(Long currentPoint){
         this.currentPoint = currentPoint;
     }
+
+    public void setAccumulatePoint(Long accumulatePoint){this.accumulatePoint = accumulatePoint;}
 }

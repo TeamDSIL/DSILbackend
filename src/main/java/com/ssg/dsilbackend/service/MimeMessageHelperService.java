@@ -20,7 +20,7 @@ public class MimeMessageHelperService {
     private final JavaMailSender javaMailSender;
 
     @Async
-    public void sendEmail(String email, String reservationInfo) throws MessagingException {
+    public void sendEmail(String email,String subject, String reservationInfo) throws MessagingException {
 
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             // 콜백 메서드 구현
@@ -31,7 +31,7 @@ public class MimeMessageHelperService {
                 // 받는 사람 이메일 
                 helper.setTo(email);
                 // 이메일 제목
-                helper.setSubject("DSIL 서비스 예약 완료 알림");
+                helper.setSubject(subject);
                 // 메일 내용
                 helper.setText(reservationInfo);
             }
