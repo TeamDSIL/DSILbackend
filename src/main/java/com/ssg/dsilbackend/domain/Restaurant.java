@@ -34,7 +34,7 @@ public class Restaurant {
     private Crowd crowd;
 
 
-    @Column(name = "restaurant_img", length = 500)
+    @Column(name = "restaurant_img")
     private String img;
 
     @Column(name = "restaurant_deposit")
