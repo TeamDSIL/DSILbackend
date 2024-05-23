@@ -4,13 +4,13 @@ import com.ssg.dsilbackend.domain.Refresh;
 import com.ssg.dsilbackend.oAuth2.CustomOAuth2User;
 import com.ssg.dsilbackend.repository.RefreshRepository;
 import com.ssg.dsilbackend.security.CustomUserDetails;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -47,28 +48,17 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
-    //    public Boolean isExpired(String token) {
-//        try {
-//            Date expiration = Jwts.parser().verifyWith(secretKey).build().parseClaimsJws(token).getBody().getExpiration();
-//            log.debug("Token expiration time: {}", expiration);
-//            return expiration.before(new Date());
-//        } catch (Exception e) {
-//            log.error("Error parsing JWT token: ", e);
-//            return true; // 토큰이 유효하지 않으면 만료된 것으로 간주
-//        }
-//    }
     public Boolean isExpired(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
     private String createToken(Map<String, Object> claims, Long expiredMs) {
-
         var jwtBuilder = Jwts.builder()
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey);
-        // 개별 클레임 추가
+
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             jwtBuilder.claim(entry.getKey(), entry.getValue());
         }
@@ -78,7 +68,6 @@ public class JWTUtil {
     }
 
     public void createJWT(HttpServletResponse response, Authentication authentication) {
-
         String name;
         String email;
         String role;
@@ -95,7 +84,6 @@ public class JWTUtil {
             throw new IllegalArgumentException("Unknown principal type: " + authentication.getPrincipal().getClass().getName());
         }
 
-
         Map<String, Object> accessClaims = new HashMap<>();
         accessClaims.put("email", email);
         accessClaims.put("category", "access");
@@ -106,7 +94,6 @@ public class JWTUtil {
         refreshClaims.put("email", email);
         refreshClaims.put("category", "refresh");
         refreshClaims.put("role", role);
-        accessClaims.put("name", name);
 
         String accessToken = createToken(accessClaims, 600000L);
         String refreshToken = createToken(refreshClaims, 86400000L);
@@ -114,7 +101,7 @@ public class JWTUtil {
         addRefreshEntity(email, refreshToken);
 
         response.setHeader("Authorization", "Bearer " + accessToken);
-        response.addCookie(createCookie("refreshToken", refreshToken));
+        response.addCookie(createCookie(refreshToken));
 
         log.debug("Access Token: {}", accessToken);
         log.debug("Refresh Token: {}", refreshToken);
@@ -132,8 +119,38 @@ public class JWTUtil {
         refreshRepository.save(refreshOb);
     }
 
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
+    public String createAccessToken(Authentication authentication) {
+
+        String email = getEmailFromAuthentication(authentication);
+        String role = getRoleFromAuthentication(authentication);
+
+        Map<String, Object> accessClaims = new HashMap<>();
+        accessClaims.put("email", email);
+        accessClaims.put("category", "access");
+        accessClaims.put("role", role);
+
+        return createToken(accessClaims, 600000L);
+    }
+
+    private String getEmailFromAuthentication(Authentication authentication) {
+        if (authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            return userDetails.getEmail();
+        } else if (authentication.getPrincipal() instanceof CustomOAuth2User oAuth2User) {
+            return oAuth2User.getEmail();
+        } else {
+            throw new IllegalArgumentException("Unknown principal type");
+        }
+    }
+
+    private String getRoleFromAuthentication(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
+
+    private Cookie createCookie(String value) {
+        Cookie cookie = new Cookie("refreshToken", value);
         cookie.setMaxAge(24 * 60 * 60);  // 1일
         cookie.setHttpOnly(true);
         cookie.setPath("/");
