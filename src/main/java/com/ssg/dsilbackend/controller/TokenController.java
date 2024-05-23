@@ -11,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -73,5 +73,26 @@ public class TokenController {
                 .build();
 
         return ResponseEntity.ok(userDTO);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<String> refreshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+        if (refreshToken == null || jwtUtil.isExpired(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = jwtUtil.getEmail(refreshToken);
+
+        Optional<Members> userData = userManageRepository.findByEmail(email);
+        if (!userData.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String newAccessToken = jwtUtil.createAccessToken(authentication);
+
+        return ResponseEntity.ok().header("Authorization", "Bearer " + newAccessToken).body(newAccessToken);
     }
 }

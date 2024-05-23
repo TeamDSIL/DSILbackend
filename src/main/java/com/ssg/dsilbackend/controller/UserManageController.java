@@ -6,7 +6,10 @@ import com.ssg.dsilbackend.dto.userManage.*;
 import com.ssg.dsilbackend.exception.MemberNotFoundException;
 import com.ssg.dsilbackend.jwt.JWTUtil;
 import com.ssg.dsilbackend.service.FileService;
+import com.ssg.dsilbackend.service.TempCodeMailSenderService;
+import com.ssg.dsilbackend.service.TempCodeService;
 import com.ssg.dsilbackend.service.UserManageService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +38,8 @@ public class UserManageController {
     private final FileService fileService;
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final TempCodeMailSenderService tempCodeMailSenderService;
+    private final TempCodeService tempCodeService;
 
     // ------------------------------------------------- login
 
@@ -79,30 +84,38 @@ public class UserManageController {
         userManageService.signUp(userManageDTO);
     }
 
+
     // ------------------------------------------------- user
     @PostMapping("/findEmail")
     public ResponseEntity<String> findEmail(@RequestBody Map<String, String> payload) {
         String tel = payload.get("tel");
-        if (tel == null) {
-            log.info("Tel parameter is null");
-        } else {
-            log.info("Received tel: " + tel);
-        }
+        log.info(tel);
+
         try {
             String email = userManageService.findEmailByTel(tel);
-            return ResponseEntity.ok(email);
-        } catch (MemberNotFoundException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            if (email != null) {
+                return ResponseEntity.ok(email);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("이메일을 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
         }
     }
-    // 이메일로 인증 코드 발송
     @PostMapping("/sendCode")
     public ResponseEntity<String> sendCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
-        // 인증 코드 생성 및 이메일 발송 로직 추가
-        // 예: String code = codeService.generateCode(email);
-        // emailService.sendEmail(email, code);
-        return ResponseEntity.ok("인증 코드가 전송되었습니다.");
+        log.info("Received email: {}", email);
+        try {
+            tempCodeService.sendEmailWithCode(email);
+            return ResponseEntity.ok("인증 코드가 전송되었습니다.");
+        } catch (MessagingException e) {
+            log.error("MessagingException occurred while sending email", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 전송 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            log.error("Exception occurred while processing request", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("인증 코드를 전송하는 중 오류가 발생했습니다.");
+        }
     }
 
     // 인증 코드 검증
@@ -110,13 +123,26 @@ public class UserManageController {
     public ResponseEntity<String> verifyCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String code = request.get("code");
-        // 인증 코드 검증 로직 추가
-        // 예: boolean isValid = codeService.verifyCode(email, code);
-        boolean isValid = true; // 임시로 설정
-        if (isValid) {
-            return ResponseEntity.ok("인증되었습니다.");
+        if (tempCodeService.verifyCode(email, code)) {
+            return ResponseEntity.ok("인증 되었습니다.");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증 코드가 틀렸습니다.");
+            return ResponseEntity.status(400).body("인증 코드가 틀렸습니다. 다시 시도해주세요.");
+        }
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String newPassword = request.get("newPassword");
+
+        log.info(email+"비밀번호 설정을 위한 이메일 받기 넘어옴?");
+        log.info(newPassword);
+
+        try {
+            userManageService.updatePassword(email, newPassword);
+            return ResponseEntity.ok("비밀번호가 재설정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("비밀번호를 재설정하는 중 오류가 발생했습니다.");
         }
     }
     // ------------------------------------------------- user

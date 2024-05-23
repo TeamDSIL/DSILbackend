@@ -16,25 +16,17 @@ import org.springframework.stereotype.Service;
 @EnableAsync
 public class TempCodeMailSenderService {
     private final JavaMailSender javaMailSender;
-    @Async
-    public void sendEmail(String email, String reservationInfo) throws MessagingException {
 
-        MimeMessagePreparator preparator = new MimeMessagePreparator() {
-            // 콜백 메서드 구현
-            @Override
-            public void prepare(MimeMessage mimeMessage) throws Exception {
-                // MimeMessageHelper 생성
-                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                // 받는 사람 이메일
-                helper.setTo(email);
-                // 이메일 제목
-                helper.setSubject("DSIL 서비스 예약 완료 알림");
-                // 메일 내용
-                helper.setText(reservationInfo);
-            }
+    @Async
+    public void sendEmail(String email, String code) throws MessagingException {
+
+        MimeMessagePreparator preparator = mimeMessage -> {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setTo(email);
+            helper.setSubject("임시 인증 코드");
+            helper.setText("귀하의 임시 인증 코드는: " + code);
         };
         try {
-            // 메일 전송
             this.javaMailSender.send(preparator);
         } catch (MailException e) {
             throw e;
