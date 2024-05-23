@@ -10,6 +10,7 @@ public interface UserManageService {
     UserManageDTO getUserInfoByEmail(String email);
     void modifyUserInfo(UserManageDTO userManageDTO);
     void deleteUserInfo(String email);
+    String findEmailByTel(String tel);
 
     List<OwnerManageDTO> getRestaurantByEmail(String email);
     void modifyOwnerData(OwnerManageDTO ownerManageDTO);

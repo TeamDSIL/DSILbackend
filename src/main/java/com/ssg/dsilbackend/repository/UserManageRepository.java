@@ -22,7 +22,7 @@ public interface UserManageRepository extends JpaRepository<Members, Long> {
 
 //    -----------------------------------oauth2-------------------------------------------------
 
-    Members findByName (String name);
+    Optional<Members> findMembersByTel(String tel);
 }
 
 

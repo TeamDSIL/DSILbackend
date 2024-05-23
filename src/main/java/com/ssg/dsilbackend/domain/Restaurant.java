@@ -64,6 +64,12 @@ public class Restaurant {
     @JsonManagedReference
     private List<Facility> facilities;
 
+    //감정분석을 위한 review리스트 추가
+    @OneToMany(mappedBy = "restaurant")
+    @JsonManagedReference
+    private List<Reservation> reservations;
+
+
 
     public void updateRestaurantInfo(OwnerManageDTO ownerManageDTO) {
         this.tel = ownerManageDTO.getTel();

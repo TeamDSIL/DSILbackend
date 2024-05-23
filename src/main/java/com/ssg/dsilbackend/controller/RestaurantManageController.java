@@ -7,8 +7,11 @@ import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import com.ssg.dsilbackend.dto.Crowd;
 import com.ssg.dsilbackend.dto.File.FileDTO;
 import com.ssg.dsilbackend.dto.restaurantManage.*;
+import com.ssg.dsilbackend.repository.RestaurantRepository;
+import com.ssg.dsilbackend.repository.ReviewRepository;
 import com.ssg.dsilbackend.service.FileService;
 import com.ssg.dsilbackend.service.RestaurantManageService;
+import com.ssg.dsilbackend.service.SentimentAnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,13 @@ import java.util.Optional;
 public class RestaurantManageController {
     private final RestaurantManageService restaurantManageService;
     private final FileService fileService;
+
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private SentimentAnalysisService sentimentAnalysisService;
 
 
     //식당id로 하나의 식당을 조회하는 메소드
@@ -154,6 +164,7 @@ public class RestaurantManageController {
         try {
             log.info("리뷰 뽑는 restaurant ID: " + restaurantId);
             List<ReviewDTO> reviews = restaurantManageService.getReviewList(restaurantId);
+            log.info(restaurantId+"번 식당의 불러올 리뷰 목록 "+reviews);
 //            log.info("찾은 리뷰 목록: "+reviews);
             if (reviews.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -263,5 +274,36 @@ public class RestaurantManageController {
     public List<ReservationDTO> getReservationsByDateRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
         return restaurantManageService.getReservationsByDateRange(startDate, endDate);
     }
+
+    //감정분석을 위한 api 포인트 작성
+    @GetMapping("/{id}/sentiment")
+    public ResponseEntity<String> getRestaurantSentiment(@PathVariable Long id) {
+        try {
+            List<Review> reviews = reviewRepository.findReviewsByRestaurantId(id);
+
+            for (Review review : reviews) {
+                if (review.getSentiment() == null || review.getSentiment().isEmpty()) {
+                    String sentiment = sentimentAnalysisService.analyzeSentiment(review.getContent());
+                    review.setSentiment(sentiment);
+                    reviewRepository.save(review);
+                }
+            }
+
+            long positiveCount = reviews.stream()
+                    .filter(review -> "positive".equals(review.getSentiment()))
+                    .count();
+            long negativeCount = reviews.stream()
+                    .filter(review -> "negative".equals(review.getSentiment()))
+                    .count();
+
+            String sentiment = positiveCount > negativeCount ? "Positive" : "Negative";
+            log.info("내가찾던 센티멘트: "+sentiment);
+            return ResponseEntity.ok(sentiment);
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 로그 출력
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+        }
+    }
+
 
 }
