@@ -12,5 +12,4 @@ public class CustomAuthenticationToken extends UsernamePasswordAuthenticationTok
         super(principal, credentials);
         this.email = email;
     }
-
 }
