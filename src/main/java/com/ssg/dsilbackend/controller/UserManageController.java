@@ -3,10 +3,8 @@ package com.ssg.dsilbackend.controller;
 
 import com.ssg.dsilbackend.dto.File.FileDTO;
 import com.ssg.dsilbackend.dto.userManage.*;
-import com.ssg.dsilbackend.exception.MemberNotFoundException;
 import com.ssg.dsilbackend.jwt.JWTUtil;
 import com.ssg.dsilbackend.service.FileService;
-import com.ssg.dsilbackend.service.TempCodeMailSenderService;
 import com.ssg.dsilbackend.service.TempCodeService;
 import com.ssg.dsilbackend.service.UserManageService;
 import jakarta.mail.MessagingException;
