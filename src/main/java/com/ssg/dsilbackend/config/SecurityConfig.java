@@ -100,9 +100,11 @@ public class SecurityConfig {
 //                        .requestMatchers("/user").hasAuthority("USER")
 //                        .requestMatchers("/manager").hasAuthority("MANAGER")
 //                        .requestMatchers("/admin").hasAuthority("ADMIN")
+
 //                        .requestMatchers("/memberManage/loginPage", "/", "/memberManage/signupPage", "/oauth2/**","/memberManage/adminManageUserPage").permitAll()
                         .anyRequest().permitAll());
-
+               
+//
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2

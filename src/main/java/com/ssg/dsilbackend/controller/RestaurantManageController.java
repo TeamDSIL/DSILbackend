@@ -7,8 +7,11 @@ import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import com.ssg.dsilbackend.dto.Crowd;
 import com.ssg.dsilbackend.dto.File.FileDTO;
 import com.ssg.dsilbackend.dto.restaurantManage.*;
+import com.ssg.dsilbackend.repository.RestaurantRepository;
+import com.ssg.dsilbackend.repository.ReviewRepository;
 import com.ssg.dsilbackend.service.FileService;
 import com.ssg.dsilbackend.service.RestaurantManageService;
+import com.ssg.dsilbackend.service.SentimentAnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,13 @@ public class RestaurantManageController {
     private final RestaurantManageService restaurantManageService;
     private final FileService fileService;
 
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private SentimentAnalysisService sentimentAnalysisService;
+
 
     //식당id로 하나의 식당을 조회하는 메소드
     @GetMapping("/{restaurant-id}")
@@ -48,13 +58,7 @@ public class RestaurantManageController {
 
     //식당정보를 수정하는 메소드
 
-    //이제 됩니다. 여기가 기준이오.
-    //또 안되니까 수정했다! 이제 컨트롤z그만..
-    //이제... 괜찮다고.. 건들지 마라고... 그만
-    //그만건들자고!
-    //이제 또 분수령이다. 현재시각 5월17일 오후 6시 24분. 간다.
-    //또 무언가를 한다. 왜냐면 메뉴추가가 안되거든. 메뉴이미지는 성공했는데. 메뉴추가가 안되서 해보는 수정작업!
-    //신중하게 합시다 현재시각 5월 18일 오후 2시 33분......
+//    잘 작동한다
     @PutMapping("/{restaurant-id}")
     public ResponseEntity<RestaurantManageDTO> updateRestaurant(
             @PathVariable("restaurant-id") Long id,
@@ -154,6 +158,7 @@ public class RestaurantManageController {
         try {
             log.info("리뷰 뽑는 restaurant ID: " + restaurantId);
             List<ReviewDTO> reviews = restaurantManageService.getReviewList(restaurantId);
+            log.info(restaurantId+"번 식당의 불러올 리뷰 목록 "+reviews);
 //            log.info("찾은 리뷰 목록: "+reviews);
             if (reviews.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -263,5 +268,36 @@ public class RestaurantManageController {
     public List<ReservationDTO> getReservationsByDateRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
         return restaurantManageService.getReservationsByDateRange(startDate, endDate);
     }
+
+    //감정분석을 위한 api 포인트 작성
+    @GetMapping("/{id}/sentiment")
+    public ResponseEntity<String> getRestaurantSentiment(@PathVariable Long id) {
+        try {
+            List<Review> reviews = reviewRepository.findReviewsByRestaurantId(id);
+
+            for (Review review : reviews) {
+                if (review.getSentiment() == null || review.getSentiment().isEmpty()) {
+                    String sentiment = sentimentAnalysisService.analyzeSentiment(review.getContent());
+                    review.setSentiment(sentiment);
+                    reviewRepository.save(review);
+                }
+            }
+
+            long positiveCount = reviews.stream()
+                    .filter(review -> "positive".equals(review.getSentiment()))
+                    .count();
+            long negativeCount = reviews.stream()
+                    .filter(review -> "negative".equals(review.getSentiment()))
+                    .count();
+
+            String sentiment = positiveCount > negativeCount ? "Positive" : "Negative";
+            log.info("감정분석의 결과: "+sentiment);
+            return ResponseEntity.ok(sentiment);
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 로그 출력
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+        }
+    }
+
 
 }

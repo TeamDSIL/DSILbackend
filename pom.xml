@@ -170,6 +170,20 @@
         <!--          <version>4.3.0</version>-->
         <!--       </dependency>-->
 
+		<!-- Apache POI -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.2</version>
+		</dependency>
+
+
+<!--		네이버 감정분석을 위한 의존성 추가-->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
+		</dependency>
 
         <!--       예측모델 머신러닝 소프트웨어 웨카 주입-->
         <!-- Weka 기본 라이브러리 -->
