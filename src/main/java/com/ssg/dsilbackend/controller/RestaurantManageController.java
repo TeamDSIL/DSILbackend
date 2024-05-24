@@ -58,13 +58,7 @@ public class RestaurantManageController {
 
     //식당정보를 수정하는 메소드
 
-    //이제 됩니다. 여기가 기준이오.
-    //또 안되니까 수정했다! 이제 컨트롤z그만..
-    //이제... 괜찮다고.. 건들지 마라고... 그만
-    //그만건들자고!
-    //이제 또 분수령이다. 현재시각 5월17일 오후 6시 24분. 간다.
-    //또 무언가를 한다. 왜냐면 메뉴추가가 안되거든. 메뉴이미지는 성공했는데. 메뉴추가가 안되서 해보는 수정작업!
-    //신중하게 합시다 현재시각 5월 18일 오후 2시 33분......
+//    잘 작동한다
     @PutMapping("/{restaurant-id}")
     public ResponseEntity<RestaurantManageDTO> updateRestaurant(
             @PathVariable("restaurant-id") Long id,
@@ -297,7 +291,7 @@ public class RestaurantManageController {
                     .count();
 
             String sentiment = positiveCount > negativeCount ? "Positive" : "Negative";
-            log.info("내가찾던 센티멘트: "+sentiment);
+            log.info("감정분석의 결과: "+sentiment);
             return ResponseEntity.ok(sentiment);
         } catch (Exception e) {
             e.printStackTrace(); // 예외 로그 출력

@@ -12,6 +12,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+//리뷰 감정분석을 위한 service
 @Service
 public class SentimentAnalysisService {
     private static final String API_URL = "https://naveropenapi.apigw.ntruss.com/sentiment-analysis/v1/analyze";
@@ -19,8 +20,8 @@ public class SentimentAnalysisService {
     private static final String CLIENT_SECRET = "QfGJyNOoxjFqfal2qNFfveQEt6nzEPU8QdhwEt7e";
 
     public String analyzeSentiment(String content) throws IOException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost postRequest = new HttpPost(API_URL);
+        CloseableHttpClient httpClient = HttpClients.createDefault(); //HTTP 클라이언트 생성
+        HttpPost postRequest = new HttpPost(API_URL); //POST 요청 생성
 
         postRequest.addHeader("X-NCP-APIGW-API-KEY-ID", CLIENT_ID);
         postRequest.addHeader("X-NCP-APIGW-API-KEY", CLIENT_SECRET);
