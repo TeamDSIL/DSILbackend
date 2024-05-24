@@ -5,6 +5,7 @@ import com.ssg.dsilbackend.dto.myDinig.*;
 import com.ssg.dsilbackend.dto.userManage.RestaurantRegisterDTO;
 import com.ssg.dsilbackend.service.FileService;
 import com.ssg.dsilbackend.service.MyDiningService;
+import com.ssg.dsilbackend.service.ReserveService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +24,7 @@ import java.util.List;
 public class MyDiningController {
     private final MyDiningService myDiningService;
     private final FileService fileService;
+    private final ReserveService reserveService;
 
     // 사용자 id 를 받아서 해당 예약리스트 출력
     @GetMapping("/reservations/{id}")

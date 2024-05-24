@@ -6,6 +6,7 @@ import com.ssg.dsilbackend.jwt.LoginFilter;
 import com.ssg.dsilbackend.oAuth2.CustomOAuth2UserService;
 import com.ssg.dsilbackend.oAuth2.CustomSuccessHandler;
 import com.ssg.dsilbackend.repository.PermissionManageRepository;
+import com.ssg.dsilbackend.repository.RefreshRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -39,6 +41,7 @@ public class SecurityConfig {
     private final PermissionManageRepository permissionManageRepository;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final RefreshRepository refreshRepository;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
@@ -97,10 +100,10 @@ public class SecurityConfig {
 //                        .requestMatchers("/user").hasAuthority("USER")
 //                        .requestMatchers("/manager").hasAuthority("MANAGER")
 //                        .requestMatchers("/admin").hasAuthority("ADMIN")
-//                        .requestMatchers("/memberManage/loginPage", "/", "/memberManage/signupPage", "/oauth2/**","/memberManage/adminManageUserPage","/restaurant/RestaurantManageMenuPage").permitAll()
 
-                        .anyRequest().permitAll()
-                        );
+//                        .requestMatchers("/memberManage/loginPage", "/", "/memberManage/signupPage", "/oauth2/**","/memberManage/adminManageUserPage").permitAll()
+                        .anyRequest().permitAll());
+               
 //
         //oauth2
         http
@@ -116,8 +119,8 @@ public class SecurityConfig {
                 .addFilterAfter(new JWTFilter(jwtUtil, permissionManageRepository), OAuth2LoginAuthenticationFilter.class);
         http
                 .addFilterAt(new JWTFilter(jwtUtil, permissionManageRepository), LoginFilter.class);
-//        http
-//                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 

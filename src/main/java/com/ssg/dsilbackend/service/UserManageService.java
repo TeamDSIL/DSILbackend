@@ -1,6 +1,7 @@
 package com.ssg.dsilbackend.service;
 
 import com.ssg.dsilbackend.dto.userManage.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ public interface UserManageService {
     void modifyUserInfo(UserManageDTO userManageDTO);
     void deleteUserInfo(String email);
     String findEmailByTel(String tel);
+    void updatePassword(String email, String password);
 
     List<OwnerManageDTO> getRestaurantByEmail(String email);
     void modifyOwnerData(OwnerManageDTO ownerManageDTO);

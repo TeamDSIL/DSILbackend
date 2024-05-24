@@ -131,6 +131,16 @@ public class UserManageServiceImpl implements UserManageService {
     }
 
     @Override
+    public void updatePassword(String email, String newPassword) {
+        Optional<Members> user = userManageRepository.findByEmail(email);
+        Members member = user.orElseThrow(()->new RuntimeException("User not found"));
+        log.info(email+"서비스임플 이메일");
+        log.info(newPassword+"서비스임플 비번");
+        member.updatePassword(bCryptPasswordEncoder.encode(newPassword));
+        userManageRepository.save(member);
+    }
+
+    @Override
     public String findEmailByTel(String tel) {
         Optional<Members> userInfo = userManageRepository.findMembersByTel(tel);
         Members members = userInfo.orElseThrow(() -> new RuntimeException("User not found"));
