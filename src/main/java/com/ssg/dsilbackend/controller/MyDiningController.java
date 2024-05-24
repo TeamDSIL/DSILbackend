@@ -99,14 +99,19 @@ public class MyDiningController {
         }
     }
 
-
     // 예약 취소 (CANCLED 상태 변경)
     @PostMapping("/reservation-cancel/{reservationId}")
     @Transactional
     public ResponseEntity<?> cancelReservation(@PathVariable Long reservationId) {
-        reserveService.cancelReservation(reservationId);
+        try {
+            reserveService.cancelReservation(reservationId);
             return ResponseEntity.ok().body("예약이 성공적으로 취소되었습니다.");
+        } catch (Exception e) {
+            // 예약 취소 중 오류 발생 시 클라이언트에게 알려줄 메시지 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("예약을 취소하는 동안 오류가 발생했습니다: " + e.getMessage());
         }
+    }
 
 
     // 리뷰 취소 요청
