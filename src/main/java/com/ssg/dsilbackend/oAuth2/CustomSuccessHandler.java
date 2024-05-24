@@ -19,8 +19,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        jwtUtil.createJWT(response, authentication);
+        String accessToken = jwtUtil.createAndReturnJWT(response, authentication);
         // 기존 리디렉션 유지
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("http://localhost:3000/OAuthSuccess?accessToken=" + accessToken);
     }
 }
