@@ -10,11 +10,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Log4j2
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JWTUtil jwtUtil;
@@ -42,62 +44,63 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        //get refresh token
+        // Get refresh token from cookies
         String refresh = null;
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-
-            if (cookie.getName().equals("refresh")) {
-
-                refresh = cookie.getValue();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refreshToken")) {
+                    refresh = cookie.getValue();
+                    break;
+                }
             }
         }
 
-        //refresh null check
-        if (refresh == null) {
+        log.debug("Refresh Token from cookie: {}", refresh);
 
+        // Refresh token null check
+        if (refresh == null) {
+            log.warn("Refresh token is null");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        //expired check
+        // Expired check
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-
-            //response status code
+            log.warn("Refresh token is expired");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
+        // Check if the token is a refresh token
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
-
-            //response status code
+            log.warn("Token is not a refresh token");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        //DB에 저장되어 있는지 확인
+        // Check if the token exists in the database
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
-
-            //response status code
+            log.warn("Refresh token does not exist in the database");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        //로그아웃 진행
-        //Refresh 토큰 DB에서 제거
+        // Proceed with logout
+        // Remove refresh token from the database
         refreshRepository.deleteByRefresh(refresh);
+        log.info("Refresh token removed from the database");
 
-        //Refresh 토큰 Cookie 값 0
-        Cookie cookie = new Cookie("refresh", null);
+        // Remove refresh token cookie
+        Cookie cookie = new Cookie("refreshToken", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
-
         response.addCookie(cookie);
+
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }

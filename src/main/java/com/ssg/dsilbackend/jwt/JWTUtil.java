@@ -107,6 +107,48 @@ public class JWTUtil {
         log.debug("Refresh Token: {}", refreshToken);
     }
 
+    public String createAndReturnJWT(HttpServletResponse response, Authentication authentication) {
+        String name;
+        String email;
+        String role;
+
+        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+            name = userDetails.getUsername();
+            email = userDetails.getEmail();
+            role = userDetails.getAuthorities().iterator().next().getAuthority();
+        } else if (authentication.getPrincipal() instanceof CustomOAuth2User oAuth2User) {
+            name = oAuth2User.getName();
+            email = oAuth2User.getEmail();
+            role = oAuth2User.getAuthorities().iterator().next().getAuthority();
+        } else {
+            throw new IllegalArgumentException("Unknown principal type: " + authentication.getPrincipal().getClass().getName());
+        }
+
+        Map<String, Object> accessClaims = new HashMap<>();
+        accessClaims.put("email", email);
+        accessClaims.put("category", "access");
+        accessClaims.put("role", role);
+        accessClaims.put("name", name);
+
+        Map<String, Object> refreshClaims = new HashMap<>();
+        refreshClaims.put("email", email);
+        refreshClaims.put("category", "refresh");
+        refreshClaims.put("role", role);
+
+        String accessToken = createToken(accessClaims, 600000L);
+        String refreshToken = createToken(refreshClaims, 86400000L);
+
+        addRefreshEntity(email, refreshToken);
+
+        response.setHeader("Authorization", "Bearer " + accessToken);
+        response.addCookie(createCookie(refreshToken));
+
+        log.debug("Access Token: {}", accessToken);
+        log.debug("Refresh Token: {}", refreshToken);
+
+        return accessToken; // JWT 토큰을 반환하도록 수정
+    }
+
     private void addRefreshEntity(String email, String refresh) {
         Date date = new Date(System.currentTimeMillis() + 86400000L);
 
