@@ -1,16 +1,10 @@
 package com.ssg.dsilbackend.service;
 
-import com.ssg.dsilbackend.domain.Members;
-import com.ssg.dsilbackend.domain.Point;
-import com.ssg.dsilbackend.domain.Reservation;
-import com.ssg.dsilbackend.domain.Restaurant;
+import com.ssg.dsilbackend.domain.*;
 import com.ssg.dsilbackend.dto.AvailableTimeTable;
 import com.ssg.dsilbackend.dto.ReservationStateName;
 import com.ssg.dsilbackend.dto.reserve.ReserveDTO;
-import com.ssg.dsilbackend.repository.MemberRepository;
-import com.ssg.dsilbackend.repository.PointManageRepository;
-import com.ssg.dsilbackend.repository.ReservationRepository;
-import com.ssg.dsilbackend.repository.RestaurantListRepository;
+import com.ssg.dsilbackend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,6 +26,7 @@ public class ReserveService {
     private final ReservationRepository reservationRepository;
     private final PaymentService paymentService;
     private final PointManageRepository pointManageRepository;
+    private final PaymentRepository paymentRepository;
 
     public Long processReservation(ReserveDTO reserveDTO) {
         try {
@@ -97,14 +92,31 @@ public class ReserveService {
     public void cancelReservation(Long reservationId) {
         try {
             Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Reservation Not Found with ID: " + reservationId));
+            Payment payment = paymentRepository.findByReservationId(reservationId).orElseThrow(() -> new EntityNotFoundException("Payment Not Found with ID: " + reservationId));
+
             reservation.setReservationStateName(ReservationStateName.CANCELED);
             reservationRepository.save(reservation);
-            paymentService.refundPayment(reservationId);
+
             Members members = reservation.getMembers();
+
+            if (payment!=null) {
+                paymentService.refundPayment(reservationId);
+            }
+
             String email = members.getEmail();
             String reservationName = reservation.getReservationName();
             LocalDate reservationDate = reservation.getReservationDate();
             AvailableTimeTable reservationTime = reservation.getReservationTime();
+
+            Point point = members.getPoint();
+            Long pointUsage = payment.getPointUsage();
+
+            if (pointUsage>0){
+                point.setCurrentPoint(point.getCurrentPoint()+pointUsage-100);
+                point.setAccumulatePoint(point.getAccumulatePoint()-100);
+                pointManageRepository.save(point);
+            }
+
 
             String CancelReservationInfo = String.format(reservationName+ "고객님의 " + reservationDate +"일 " + reservationTime.getTime() +"시의 예약이 취소되었습니다.");
             String subject = "Dsil 서비스 예약 취소 알림";
