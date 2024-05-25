@@ -10,6 +10,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
+/**
+ * 해당 클래스는 메일 서버 설정을 구성하기 위해 사용한 클래스로 application.properties에서 해당 정보들을 가져온다.
+ * 작성자: [Imhwan]
+ */
 @Configuration
 @ConfigurationProperties(prefix = "mail")
 @Getter

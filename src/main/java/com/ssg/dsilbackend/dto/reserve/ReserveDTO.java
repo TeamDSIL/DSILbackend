@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ReserveDTO {
-    private Long reservationId; // 예약 ID 추가
+    private Long reservationId;
     private Long restaurantId;
     private Long memberId;
     private String reservationStateName;
