@@ -31,8 +31,4 @@ public interface UserManageService {
     void removeReview(Long reviewId);
 
     void removeReply(Long replyId);
-
-
-
-
 }

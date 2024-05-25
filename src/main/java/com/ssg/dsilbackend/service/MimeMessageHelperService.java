@@ -11,6 +11,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+/**
+ * 해당 클래스는 회원에게 이메일을 보내주는 클래스로 이메일 전송 작업은 시간이 오래걸리기에
+ * 비동기 메서드를 활성화하였고 메서드에 Async 어노테이션을 통해 비동기적으로 실행되게 구현
+ * 작성자 : [Imhwan]
+ */
 
 @Service
 @RequiredArgsConstructor

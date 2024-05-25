@@ -89,6 +89,13 @@ public class Restaurant {
         this.description = description;
     }
 
+    public void reduceTable(Long tableCount) {
+        if (this.tableCount >= tableCount) {
+            this.tableCount -= tableCount;
+        } else {
+            throw new IllegalArgumentException("Not enough available tables to reduce.");
+        }
+    }
 
 }
 

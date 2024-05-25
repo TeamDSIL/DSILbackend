@@ -8,6 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 해당 클래스는 결제 정보를 POST 요청으로 보낼 때 해당 결제 정보를 저장하고 성공 여부를 HttpStatus로 반환해준다.
+ * 작성자 : [ Imhwan]
+ */
+
 @RestController
 @RequiredArgsConstructor
 @Log4j2

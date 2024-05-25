@@ -4,7 +4,7 @@
     <!-- Server Log Config -->
         <property resource="application.properties"/>
         <!-- log file path -->
-        <property name="LOG_PATH" value="/User/fabul/log"/>
+        <property name="LOG_PATH" value="/Users/fabul/log"/>
 
 
         <!-- log file name -->

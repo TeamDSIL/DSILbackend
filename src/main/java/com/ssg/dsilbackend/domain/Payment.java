@@ -6,6 +6,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * 해당 Entity는 결제와 관련된 Entity다
+ * 작성자 : [Imhwan]
+ */
 @Entity
 @Getter
 @Builder
