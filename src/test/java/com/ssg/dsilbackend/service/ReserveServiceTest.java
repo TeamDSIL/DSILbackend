@@ -32,13 +32,6 @@ public class ReserveServiceTest {
     @Mock
     private Clock clock;
 
-    @Autowired
-    private PaymentService paymentService;
-    @Autowired
-    private ReservationRepository reservationRepository;
-    @Autowired
-    private PaymentRepository paymentRepository;
-
     @BeforeEach
     public void setUp() {
         // Set the clock to a fixed date for testing purposes
@@ -51,7 +44,7 @@ public class ReserveServiceTest {
     @DisplayName("CancelReservation")
     @Rollback(false)
     public void testCancelReservation() {
-        Long reservationId = 35L;
+        Long reservationId = 37L;
         ReserveDTO reserveDTO = new ReserveDTO();
         reserveDTO.setReservationId(reservationId);
         reserveService.cancelReservation(reserveDTO.getReservationId());
@@ -90,7 +83,7 @@ public class ReserveServiceTest {
     @Test
     @Rollback(value = false)
     public void testCancelReservationMailService() throws Exception {
-        Long reservationId =43L;
+        Long reservationId =40L;
         ReserveDTO reserveDTO = new ReserveDTO();
         reserveDTO.setReservationId(reservationId);
         reserveService.cancelReservation(reservationId);

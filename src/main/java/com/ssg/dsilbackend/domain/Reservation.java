@@ -8,6 +8,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
+/**
+ * 해당 Entity는 예약과 관련된 Entity다
+ * 작성자 : [Imhwan]
+ */
 @Entity
 @Getter
 @Builder

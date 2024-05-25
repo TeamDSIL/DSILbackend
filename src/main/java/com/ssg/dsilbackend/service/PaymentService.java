@@ -15,7 +15,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
+/**
+ * 해당 클래스는 결제와 관련된 클래스로 결제 정보 저장과 환불 메서드가 구현되어있다.
+ * 작성자 : [Imhwan}
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -24,9 +27,10 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final ReservationRepository reservationRepository;
-    private final RefundService refundService;
     private final PointManageRepository pointManageRepository;
+    private final RefundService refundService;
 
+    //해댱 메서드는 결제 정보를 저장하는 것이다
     public void savePayment(PaymentDTO paymentDTO, Long reservationId) {
         try {
 
@@ -40,7 +44,6 @@ public class PaymentService {
             String name = members.getName();
 
             Point point = members.getPoint();
-
             Long pointUsage = paymentDTO.getPointUsage();
 
             if (point.getCurrentPoint() >= pointUsage) {
@@ -74,7 +77,8 @@ public class PaymentService {
         }
     }
 
-    @SneakyThrows
+    //해당 메서드는 환불 로직으로 환불을 사용하기 위해 Api에서 명세한 토큰을 가져오며 결제 상태를 취소로 변경한다
+    @SneakyThrows //롬복에서 제공하는 어노테이션으로 검사된 예외 throw (테스트로 써보는데 아직 문제 없는듯...(사용 유의))
     public void refundPayment(Long reservationId) {
         Payment payment = paymentRepository.findByReservationId(reservationId).orElseThrow(() -> new EntityNotFoundException("Payment not found with ID: " + reservationId));
         String token = refundService.getToken();
