@@ -185,23 +185,7 @@
 			<version>4.5.13</version>
 		</dependency>
 
-        <!--       예측모델 머신러닝 소프트웨어 웨카 주입-->
-        <!-- Weka 기본 라이브러리 -->
-        <dependency>
-            <groupId>nz.ac.waikato.cms.weka</groupId>
-            <artifactId>weka-stable</artifactId>
-            <version>3.8.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/weka-stable-3.8.5.jar</systemPath>
-        </dependency>
-        <!-- Weka timeseriesForecasting 패키지 -->
-        <dependency>
-            <groupId>nz.ac.waikato.cms.weka</groupId>
-            <artifactId>timeseriesForecasting</artifactId>
-            <version>3.8.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/timeseriesForecasting1.1.27.jar</systemPath>
-        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

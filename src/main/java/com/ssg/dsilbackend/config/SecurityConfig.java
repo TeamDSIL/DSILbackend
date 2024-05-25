@@ -103,7 +103,7 @@ public class SecurityConfig {
 
 //                        .requestMatchers("/memberManage/loginPage", "/", "/memberManage/signupPage", "/oauth2/**","/memberManage/adminManageUserPage").permitAll()
                         .anyRequest().permitAll());
-               
+
 //
         //oauth2
         http

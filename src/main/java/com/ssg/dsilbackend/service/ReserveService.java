@@ -88,7 +88,7 @@ public class ReserveService {
             int peopleCount = savedReservation.getPeopleCount();
 
             String reservationInfo = String.format("방문 고객 : %s\n예약 날짜는 : %s이며 \n예약 시간은 %s이고 \n예약 인원 수는 %d명입니다",
-                    reservationName, reservationDate, reservationTime.getTime(), peopleCount);
+                    reservationName, reservationDate, reservationTime, peopleCount);
 
             String subject = "Dsil 서비스 예약 완료 알림";
 
@@ -120,7 +120,7 @@ public class ReserveService {
             LocalDate reservationDate = reservation.getReservationDate();
             AvailableTimeTable reservationTime = reservation.getReservationTime();
 
-            String CancelReservationInfo = String.format(reservationName+ "고객님의 " + reservationDate +"일 " + reservationTime.getTime() +"시의 예약이 취소되었습니다.");
+            String CancelReservationInfo = String.format(reservationName+ "고객님의 " + reservationDate +"일 " + reservationTime +"시의 예약이 취소되었습니다.");
             String subject = "Dsil 서비스 예약 취소 알림";
             mimeMessageHelperService.sendEmail(email,subject, CancelReservationInfo);
 
