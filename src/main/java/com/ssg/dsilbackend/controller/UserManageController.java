@@ -6,7 +6,12 @@ import com.ssg.dsilbackend.dto.userManage.*;
 import com.ssg.dsilbackend.exception.MemberNotFoundException;
 import com.ssg.dsilbackend.jwt.JWTUtil;
 import com.ssg.dsilbackend.service.FileService;
+import com.ssg.dsilbackend.service.TempCodeMailSenderService;
+import com.ssg.dsilbackend.service.TempCodeService;
 import com.ssg.dsilbackend.service.UserManageService;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,8 +40,28 @@ public class UserManageController {
     private final FileService fileService;
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final TempCodeService tempCodeService;
 
     // ------------------------------------------------- login
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refreshToken")) {
+                    log.info("Found refresh token in cookie: {}", cookie.getValue());
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                }
+            }
+        } else {
+            log.warn("No cookies found in the request");
+        }
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
+
 
     @GetMapping("/loginPage")
     public void getLogin() {
@@ -79,30 +104,39 @@ public class UserManageController {
         userManageService.signUp(userManageDTO);
     }
 
+
     // ------------------------------------------------- user
     @PostMapping("/findEmail")
     public ResponseEntity<String> findEmail(@RequestBody Map<String, String> payload) {
         String tel = payload.get("tel");
-        if (tel == null) {
-            log.info("Tel parameter is null");
-        } else {
-            log.info("Received tel: " + tel);
-        }
+        log.info(tel);
+
         try {
             String email = userManageService.findEmailByTel(tel);
-            return ResponseEntity.ok(email);
-        } catch (MemberNotFoundException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            if (email != null) {
+                return ResponseEntity.ok(email);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("이메일을 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
         }
     }
-    // 이메일로 인증 코드 발송
+
     @PostMapping("/sendCode")
     public ResponseEntity<String> sendCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
-        // 인증 코드 생성 및 이메일 발송 로직 추가
-        // 예: String code = codeService.generateCode(email);
-        // emailService.sendEmail(email, code);
-        return ResponseEntity.ok("인증 코드가 전송되었습니다.");
+        log.info("Received email: {}", email);
+        try {
+            tempCodeService.sendEmailWithCode(email);
+            return ResponseEntity.ok("인증 코드가 전송되었습니다.");
+        } catch (MessagingException e) {
+            log.error("MessagingException occurred while sending email", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 전송 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            log.error("Exception occurred while processing request", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("인증 코드를 전송하는 중 오류가 발생했습니다.");
+        }
     }
 
     // 인증 코드 검증
@@ -110,49 +144,60 @@ public class UserManageController {
     public ResponseEntity<String> verifyCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String code = request.get("code");
-        // 인증 코드 검증 로직 추가
-        // 예: boolean isValid = codeService.verifyCode(email, code);
-        boolean isValid = true; // 임시로 설정
-        if (isValid) {
-            return ResponseEntity.ok("인증되었습니다.");
+        if (tempCodeService.verifyCode(email, code)) {
+            return ResponseEntity.ok("인증 되었습니다.");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증 코드가 틀렸습니다.");
+            return ResponseEntity.status(400).body("인증 코드가 틀렸습니다. 다시 시도해주세요.");
+        }
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String newPassword = request.get("newPassword");
+
+        log.info(email + "비밀번호 설정을 위한 이메일 받기 넘어옴?");
+        log.info(newPassword);
+
+        try {
+            userManageService.updatePassword(email, newPassword);
+            return ResponseEntity.ok("비밀번호가 재설정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("비밀번호를 재설정하는 중 오류가 발생했습니다.");
         }
     }
     // ------------------------------------------------- user
 
     @GetMapping("/userMyPage")
-    public UserManageDTO getUserData(@RequestParam String email){
+    public UserManageDTO getUserData(@RequestParam String email) {
         log.info("{} get 요청", email);
         return userManageService.getUserInfoByEmail(email);
     }
 
     @PostMapping("/userMyPage")
-    public void postUserData(@RequestBody UserManageDTO userManageDTO){
+    public void postUserData(@RequestBody UserManageDTO userManageDTO) {
         log.info("{} post 요청", userManageDTO);
         userManageService.modifyUserInfo(userManageDTO);
     }
 
     @DeleteMapping("/userMyPage")
-    public void deleteUserData(@RequestParam String email){
+    public void deleteUserData(@RequestParam String email) {
         log.info("{} delete 요청", email);
         userManageService.deleteUserInfo(email);
-        log.info("됩니까");
     }
-
 
 
     // ------------------------------------------------- owner
 
     @GetMapping("/ownerMyPage")
-    public List<OwnerManageDTO> getOwnerData(@RequestParam String email){
+    public List<OwnerManageDTO> getOwnerData(@RequestParam String email) {
         log.info(email);
         return userManageService.getRestaurantByEmail(email);
     }
 
 
     @PostMapping("/ownerMyPage")
-    public void postOwnerData(@RequestBody OwnerManageDTO ownerManageDTO){
+    public void postOwnerData(@RequestBody OwnerManageDTO ownerManageDTO) {
         log.info(ownerManageDTO);
         userManageService.modifyOwnerData(ownerManageDTO);
     }
@@ -161,14 +206,14 @@ public class UserManageController {
 
     // 회원 관리 페이지
     @GetMapping("/adminManageUserPage")
-    public List<UserManageDTO> getUserManageList(){
+    public List<UserManageDTO> getUserManageList() {
         log.info("일반회원 목록 출력");
         return userManageService.getUserInfoList();
     }
 
     // 회원 관리 페이지 - 수정
     @PostMapping("/adminManageUserPage")
-    public void modifyUserInfo(@RequestBody UserManageDTO userManageDTO){
+    public void modifyUserInfo(@RequestBody UserManageDTO userManageDTO) {
         log.info("일반회원 정보 수정");
         log.info(userManageDTO);
         userManageService.modifyUserInfo(userManageDTO);
@@ -176,7 +221,7 @@ public class UserManageController {
 
     // 회원 관리 페이지 - status 값 수정
     @DeleteMapping("/adminManageUserPage")
-    public void deleteUserInfo(@RequestParam String email){
+    public void deleteUserInfo(@RequestParam String email) {
         log.info("일반 회원 정보 삭제");
         log.info(email);
         userManageService.deleteUserInfo(email);
@@ -185,14 +230,14 @@ public class UserManageController {
 
     // 식당 관리자 페이지
     @GetMapping("/adminManageRestaurantPage")
-    public List<OwnerManageDTO> getOwnerManageList(){
+    public List<OwnerManageDTO> getOwnerManageList() {
         log.info("식당 관리자 목록 출력");
         return userManageService.getOwnerInfoList();
     }
 
     // 식당 관리자 페이지 - 수정
     @PostMapping("/adminManageRestaurantPage")
-    public void modifyOwnerInfo(@RequestBody OwnerManageDTO request){
+    public void modifyOwnerInfo(@RequestBody OwnerManageDTO request) {
         log.info("식당 관리자 정보 수정");
         log.info(request);
         userManageService.modifyOwnerInfo(request);
@@ -201,13 +246,13 @@ public class UserManageController {
     // 식당 관리자 페이지 - 식당 삭제
     @DeleteMapping("/adminManageRestaurantPage")
     @Transactional
-    public void deleteOwnerInfo(@RequestParam String restaurantName){
+    public void deleteOwnerInfo(@RequestParam String restaurantName) {
         log.info("식당 관리자 정보 삭제");
         log.info(restaurantName);
         userManageService.removeRestaurantByName(restaurantName);
     }
 
-// 식당등록
+    // 식당등록
     @PostMapping("/registerRestaurant")
     public ResponseEntity<?> registerRestaurant(
             @ModelAttribute RestaurantRegisterDTO restaurantRegisterDTO) {
@@ -217,14 +262,14 @@ public class UserManageController {
             MultipartFile resImg = restaurantRegisterDTO.getImg();
             List<FileDTO> fileDTOList = fileService.uploadFiles(List.of(resImg), "restaurnat_img");
             restaurantRegisterDTO.setImgUrl(fileDTOList.get(0).getUploadFileUrl());
-            System.out.println("setImgUrl: "+restaurantRegisterDTO.getImgUrl());
+            System.out.println("setImgUrl: " + restaurantRegisterDTO.getImgUrl());
 
             // 메뉴사진
-            for(int i =0 ; i<restaurantRegisterDTO.getMenuDTOs().size() ; i++ ){
+            for (int i = 0; i < restaurantRegisterDTO.getMenuDTOs().size(); i++) {
                 MultipartFile menuImg = restaurantRegisterDTO.getMenuDTOs().get(i).getImg();
                 List<FileDTO> menuFileDTOList = fileService.uploadFiles(List.of(menuImg), "menu_img");
                 restaurantRegisterDTO.getMenuDTOs().get(i).setImgUrl(menuFileDTOList.get(0).getUploadFileUrl());
-                System.out.println("setImgUrl: "+i+"번 "+restaurantRegisterDTO.getMenuDTOs().get(i).getImgUrl());
+                System.out.println("setImgUrl: " + i + "번 " + restaurantRegisterDTO.getMenuDTOs().get(i).getImgUrl());
             }
 
             userManageService.registerRestaurantInfo(restaurantRegisterDTO);
