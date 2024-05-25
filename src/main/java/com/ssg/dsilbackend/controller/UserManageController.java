@@ -40,6 +40,7 @@ public class UserManageController {
     private final JWTUtil jwtUtil;
     private final TempCodeService tempCodeService;
 
+
     // ------------------------------------------------- login
 
     @PostMapping("/logout")
@@ -58,6 +59,7 @@ public class UserManageController {
             log.warn("No cookies found in the request");
         }
         response.setStatus(HttpServletResponse.SC_OK);
+
     }
 
 
