@@ -126,6 +126,7 @@ public class ReserveService {
             String reservationTime = enumToTime(reservationTimeEnum);
 
             String CancelReservationInfo = String.format(reservationName + "고객님의 " + reservationDate + "일 " + reservationTime  + "시의 예약이 취소되었습니다.");
+
             String subject = "Dsil 서비스 예약 취소 알림";
             mimeMessageHelperService.sendEmail(email, subject, CancelReservationInfo);
 

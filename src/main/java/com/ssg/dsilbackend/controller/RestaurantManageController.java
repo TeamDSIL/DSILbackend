@@ -290,7 +290,7 @@ public class RestaurantManageController {
                     .filter(review -> "negative".equals(review.getSentiment()))
                     .count();
 
-            String sentiment = positiveCount > negativeCount ? "Positive" : "Negative";
+            String sentiment = positiveCount > negativeCount ? "긍정적이에요" : "부정적이에요";
             log.info("감정분석의 결과: "+sentiment);
             return ResponseEntity.ok(sentiment);
         } catch (Exception e) {
