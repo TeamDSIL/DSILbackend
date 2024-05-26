@@ -96,6 +96,9 @@ public class Restaurant {
             throw new IllegalArgumentException("Not enough available tables to reduce.");
         }
     }
+    public void recoverTable(Long tableCount) {
+        this.tableCount += tableCount;
+    }
 
 }
 
