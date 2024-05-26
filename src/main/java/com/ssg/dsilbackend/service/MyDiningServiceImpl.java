@@ -19,15 +19,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class MyDiningServiceImpl implements MyDiningService {
-    private final ModelMapper modelMapper;
-    private final RestaurantRepository restaurantRepository;
     private final ReservationRepository reservationRepository;
 
     private final MemberRepository memberRepository;
 
     private final ReviewRepository reviewRepository;
     private final BookmarkRepository bookmarkRepository;
-
 
     // 사용자 아이디번호 받아서 예약리스트 출력
     public List<MydiningReserveDTO> getMydiningReserveListById(Long id) {

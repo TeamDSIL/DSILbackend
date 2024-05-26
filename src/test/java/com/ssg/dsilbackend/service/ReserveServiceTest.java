@@ -83,10 +83,14 @@ public class ReserveServiceTest {
     @Test
     @Rollback(value = false)
     public void testCancelReservationMailService() throws Exception {
-        Long reservationId =40L;
+        Long reservationId = 40L;
         ReserveDTO reserveDTO = new ReserveDTO();
         reserveDTO.setReservationId(reservationId);
         reserveService.cancelReservation(reservationId);
-
     }
+
+    @Test
+    @Rollback(value = false)
+    public void recoverTableTest() throws Exception {}
+
 }

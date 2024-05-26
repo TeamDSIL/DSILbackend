@@ -28,4 +28,5 @@ public class RestaurantDetailDTO { // 식당상세페이지 dto
     private Long restaurant_deposit;
     private Long restaurant_table_count;
     private List<String> facilies;
+
 }
