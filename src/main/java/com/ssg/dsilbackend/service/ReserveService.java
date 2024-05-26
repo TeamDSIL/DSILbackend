@@ -131,29 +131,25 @@ public class ReserveService {
 
             Payment payment = paymentRepository.findByReservationId(reservationId).orElse(null);
 
-            if (payment != null) {
+            Point point = members.getPoint();
+            Long pointUsage = payment != null ? payment.getPointUsage() : 0L;
+
+            if (payment != null && payment.getImpUid() != null) {
+                // 일반 결제 취소
                 paymentService.refundPayment(reservationId);
-                Point point = members.getPoint();
-                Long pointUsage = payment.getPointUsage();
-
-                //예약 취소 시 예약할떄 주는 100포인트 몰수
-                point.setCurrentPoint(point.getCurrentPoint() + pointUsage - 100);
-                point.setAccumulatePoint(point.getAccumulatePoint() - 100);
-                pointManageRepository.save(point);
-            } else if (payment == null) {
-                Point point = members.getPoint();
-
-                //예약 취소 시 예약할떄 주는 100포인트 몰수
-                point.setCurrentPoint(point.getCurrentPoint() - 100);
-                point.setAccumulatePoint(point.getAccumulatePoint() - 100);
-                pointManageRepository.save(point);
             }
 
+            // 예약 취소 시 예약할 때 주는 100포인트 몰수 및 포인트 환불 처리
+            point.setCurrentPoint(point.getCurrentPoint() + pointUsage - 100);
+            point.setAccumulatePoint(point.getAccumulatePoint() - 100);
+            pointManageRepository.save(point);
+
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             throw new RuntimeException("Error canceling reservation", e);
         }
     }
+
     //프론트에서 enum타입으로 넘어오는 값 이메일 정보에 ex)13:00으로 출력하기 위해 변환
     //원래는 Enum에서 변환해야함
     private String enumToTime(AvailableTimeTable timeEnum) {
