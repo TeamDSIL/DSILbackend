@@ -23,6 +23,8 @@ import java.util.Optional;
 @Log4j2
 public class TokenController {
     private final UserManageRepository userManageRepository;
+    private final  JWTUtil jwtUtil;
+
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {

@@ -22,6 +22,5 @@ public class UserManageDTO {
     private String address;
     private String postcode;
     private String status;
-
 }
 

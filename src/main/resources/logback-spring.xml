@@ -11,6 +11,9 @@
     <property name="ERR_LOG_FILE_NAME" value="${error.log.config.filename}"/>
     <!-- log pattern -->
     <property name="LOG_PATTERN" value="%-5level %d{yy-MM-dd HH:mm:ss} [%thread] [%logger{0}-%M:%line] - %msg%n "/>
+        <property resource="application.properties"/>
+        <!-- log file path -->
+        <property name="LOG_PATH" value="/Users/fabul/log"/>
 
     <appender name="DEV_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">

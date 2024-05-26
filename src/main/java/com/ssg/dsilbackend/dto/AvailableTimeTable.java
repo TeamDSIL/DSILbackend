@@ -13,4 +13,5 @@ public enum AvailableTimeTable {
     AFTERNOON_7,
     AFTERNOON_8,
     AFTERNOON_9;
+
 }

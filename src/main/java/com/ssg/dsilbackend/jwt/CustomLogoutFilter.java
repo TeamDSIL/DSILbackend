@@ -92,8 +92,10 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         // Proceed with logout
         // Remove refresh token from the database
-        refreshRepository.deleteByRefresh(refresh);
-        log.info("Refresh token removed from the database");
+//        refreshRepository.deleteByRefresh(refresh);
+//        log.info("Refresh token removed from the database");
+
+//        리프레시 토큰은 시간이 지나면 자동 소멸 24시간
 
         // Remove refresh token cookie
         Cookie cookie = new Cookie("refreshToken", null);
