@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 /**
@@ -69,10 +68,6 @@ public class ReserveService {
             Long reservationId = savedReservation.getId();
             log.info("예약 성공 : {}", reservationId);
 
-            int people = reserveDTO.getPeopleCount();
-            int tables = (int) Math.ceil((double) people / 4); // 예약한 인원을 4로 나눈 후 올림 처리하여 필요한 테이블 수 계산
-            restaurant.reduceTable((long) tables);
-
             //예약이 성공했을 경우 해당 회원에게 100포인트 적립
             Point point = member.getPoint();
             Long currentPoint = point.getCurrentPoint();
@@ -126,7 +121,6 @@ public class ReserveService {
             String reservationTime = enumToTime(reservationTimeEnum);
 
             String CancelReservationInfo = String.format(reservationName + "고객님의 " + reservationDate + "일 " + reservationTime  + "시의 예약이 취소되었습니다.");
-
             String subject = "Dsil 서비스 예약 취소 알림";
             mimeMessageHelperService.sendEmail(email, subject, CancelReservationInfo);
 
