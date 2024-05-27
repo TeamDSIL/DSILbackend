@@ -64,6 +64,12 @@ public class Restaurant {
     @JsonManagedReference
     private List<Facility> facilities;
 
+    //감정분석을 위한 review리스트 추가
+    @OneToMany(mappedBy = "restaurant")
+    @JsonManagedReference
+    private List<Reservation> reservations;
+
+
 
     public void updateRestaurantInfo(OwnerManageDTO ownerManageDTO) {
         this.tel = ownerManageDTO.getTel();
@@ -83,6 +89,16 @@ public class Restaurant {
         this.description = description;
     }
 
+    public void reduceTable(Long tableCount) {
+        if (this.tableCount >= tableCount) {
+            this.tableCount -= tableCount;
+        } else {
+            throw new IllegalArgumentException("Not enough available tables to reduce.");
+        }
+    }
+    public void recoverTable(Long tableCount) {
+        this.tableCount += tableCount;
+    }
 
 }
 

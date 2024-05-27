@@ -41,6 +41,16 @@ public class Review {
     @Column(name = "review_img", length = 500)
     private String img;
 
+    //감정분석을 위한 감정분석 필드 추가
+    @Column(name = "review_sentiment")
+    private String sentiment;
+
+    public void setSentiment(String sentiment) {
+        this.sentiment = sentiment;
+    }
+
+
+
     public void setReply(Reply reply) {
         this.reply = reply;
     }
@@ -58,6 +68,10 @@ public class Review {
 
     public void setReplyNUll() {
         this.reply = null;
+    }
+
+    public Long getReplyId() {
+        return reply != null ? reply.getId() : null;
     }
 
 }

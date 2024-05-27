@@ -3,13 +3,13 @@ package com.ssg.dsilbackend.controller;
 
 import com.ssg.dsilbackend.dto.File.FileDTO;
 import com.ssg.dsilbackend.dto.userManage.*;
-import com.ssg.dsilbackend.exception.MemberNotFoundException;
 import com.ssg.dsilbackend.jwt.JWTUtil;
 import com.ssg.dsilbackend.service.FileService;
-import com.ssg.dsilbackend.service.TempCodeMailSenderService;
 import com.ssg.dsilbackend.service.TempCodeService;
 import com.ssg.dsilbackend.service.UserManageService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,10 +38,30 @@ public class UserManageController {
     private final FileService fileService;
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final TempCodeMailSenderService tempCodeMailSenderService;
     private final TempCodeService tempCodeService;
 
+
     // ------------------------------------------------- login
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refreshToken")) {
+                    log.info("Found refresh token in cookie: {}", cookie.getValue());
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                }
+            }
+        } else {
+            log.warn("No cookies found in the request");
+        }
+        response.setStatus(HttpServletResponse.SC_OK);
+
+    }
+
 
     @GetMapping("/loginPage")
     public void getLogin() {
@@ -102,6 +122,7 @@ public class UserManageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
         }
     }
+
     @PostMapping("/sendCode")
     public ResponseEntity<String> sendCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
@@ -135,7 +156,7 @@ public class UserManageController {
         String email = request.get("email");
         String newPassword = request.get("newPassword");
 
-        log.info(email+"비밀번호 설정을 위한 이메일 받기 넘어옴?");
+        log.info(email + "비밀번호 설정을 위한 이메일 받기 넘어옴?");
         log.info(newPassword);
 
         try {
@@ -148,37 +169,35 @@ public class UserManageController {
     // ------------------------------------------------- user
 
     @GetMapping("/userMyPage")
-    public UserManageDTO getUserData(@RequestParam String email){
+    public UserManageDTO getUserData(@RequestParam String email) {
         log.info("{} get 요청", email);
         return userManageService.getUserInfoByEmail(email);
     }
 
     @PostMapping("/userMyPage")
-    public void postUserData(@RequestBody UserManageDTO userManageDTO){
+    public void postUserData(@RequestBody UserManageDTO userManageDTO) {
         log.info("{} post 요청", userManageDTO);
         userManageService.modifyUserInfo(userManageDTO);
     }
 
     @DeleteMapping("/userMyPage")
-    public void deleteUserData(@RequestParam String email){
+    public void deleteUserData(@RequestParam String email) {
         log.info("{} delete 요청", email);
         userManageService.deleteUserInfo(email);
-        log.info("됩니까");
     }
-
 
 
     // ------------------------------------------------- owner
 
     @GetMapping("/ownerMyPage")
-    public List<OwnerManageDTO> getOwnerData(@RequestParam String email){
+    public List<OwnerManageDTO> getOwnerData(@RequestParam String email) {
         log.info(email);
         return userManageService.getRestaurantByEmail(email);
     }
 
 
     @PostMapping("/ownerMyPage")
-    public void postOwnerData(@RequestBody OwnerManageDTO ownerManageDTO){
+    public void postOwnerData(@RequestBody OwnerManageDTO ownerManageDTO) {
         log.info(ownerManageDTO);
         userManageService.modifyOwnerData(ownerManageDTO);
     }
@@ -187,14 +206,14 @@ public class UserManageController {
 
     // 회원 관리 페이지
     @GetMapping("/adminManageUserPage")
-    public List<UserManageDTO> getUserManageList(){
+    public List<UserManageDTO> getUserManageList() {
         log.info("일반회원 목록 출력");
         return userManageService.getUserInfoList();
     }
 
     // 회원 관리 페이지 - 수정
     @PostMapping("/adminManageUserPage")
-    public void modifyUserInfo(@RequestBody UserManageDTO userManageDTO){
+    public void modifyUserInfo(@RequestBody UserManageDTO userManageDTO) {
         log.info("일반회원 정보 수정");
         log.info(userManageDTO);
         userManageService.modifyUserInfo(userManageDTO);
@@ -202,7 +221,7 @@ public class UserManageController {
 
     // 회원 관리 페이지 - status 값 수정
     @DeleteMapping("/adminManageUserPage")
-    public void deleteUserInfo(@RequestParam String email){
+    public void deleteUserInfo(@RequestParam String email) {
         log.info("일반 회원 정보 삭제");
         log.info(email);
         userManageService.deleteUserInfo(email);
@@ -211,14 +230,14 @@ public class UserManageController {
 
     // 식당 관리자 페이지
     @GetMapping("/adminManageRestaurantPage")
-    public List<OwnerManageDTO> getOwnerManageList(){
+    public List<OwnerManageDTO> getOwnerManageList() {
         log.info("식당 관리자 목록 출력");
         return userManageService.getOwnerInfoList();
     }
 
     // 식당 관리자 페이지 - 수정
     @PostMapping("/adminManageRestaurantPage")
-    public void modifyOwnerInfo(@RequestBody OwnerManageDTO request){
+    public void modifyOwnerInfo(@RequestBody OwnerManageDTO request) {
         log.info("식당 관리자 정보 수정");
         log.info(request);
         userManageService.modifyOwnerInfo(request);
@@ -227,13 +246,13 @@ public class UserManageController {
     // 식당 관리자 페이지 - 식당 삭제
     @DeleteMapping("/adminManageRestaurantPage")
     @Transactional
-    public void deleteOwnerInfo(@RequestParam String restaurantName){
+    public void deleteOwnerInfo(@RequestParam String restaurantName) {
         log.info("식당 관리자 정보 삭제");
         log.info(restaurantName);
         userManageService.removeRestaurantByName(restaurantName);
     }
 
-// 식당등록
+    // 식당등록
     @PostMapping("/registerRestaurant")
     public ResponseEntity<?> registerRestaurant(
             @ModelAttribute RestaurantRegisterDTO restaurantRegisterDTO) {
@@ -243,14 +262,14 @@ public class UserManageController {
             MultipartFile resImg = restaurantRegisterDTO.getImg();
             List<FileDTO> fileDTOList = fileService.uploadFiles(List.of(resImg), "restaurnat_img");
             restaurantRegisterDTO.setImgUrl(fileDTOList.get(0).getUploadFileUrl());
-            System.out.println("setImgUrl: "+restaurantRegisterDTO.getImgUrl());
+            System.out.println("setImgUrl: " + restaurantRegisterDTO.getImgUrl());
 
             // 메뉴사진
-            for(int i =0 ; i<restaurantRegisterDTO.getMenuDTOs().size() ; i++ ){
+            for (int i = 0; i < restaurantRegisterDTO.getMenuDTOs().size(); i++) {
                 MultipartFile menuImg = restaurantRegisterDTO.getMenuDTOs().get(i).getImg();
                 List<FileDTO> menuFileDTOList = fileService.uploadFiles(List.of(menuImg), "menu_img");
                 restaurantRegisterDTO.getMenuDTOs().get(i).setImgUrl(menuFileDTOList.get(0).getUploadFileUrl());
-                System.out.println("setImgUrl: "+i+"번 "+restaurantRegisterDTO.getMenuDTOs().get(i).getImgUrl());
+                System.out.println("setImgUrl: " + i + "번 " + restaurantRegisterDTO.getMenuDTOs().get(i).getImgUrl());
             }
 
             userManageService.registerRestaurantInfo(restaurantRegisterDTO);

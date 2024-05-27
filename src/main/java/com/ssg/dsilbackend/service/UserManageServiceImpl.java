@@ -89,9 +89,7 @@ public class UserManageServiceImpl implements UserManageService {
     // 사용자 이메일로 회원 정보 갖고오기 #테스트 성공
     @Override
     public UserManageDTO getUserInfoByEmail(String email) {
-        Optional<Members> userData = userManageRepository.findByEmail(email);
-
-        Members members = userData.orElseThrow(() -> new RuntimeException("User not found"));
+        Members members = userManageRepository.findMembersByPermissionRoleAndStatusAndEmail(PermissionRole.USER,true,email);
 
         UserManageDTO userInfo = UserManageDTO
                 .builder()

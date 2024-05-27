@@ -32,7 +32,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         System.out.println(oAuth2User);
@@ -86,9 +85,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         userManageRepository.save(members);
         return createCustomOAuth2User(members, oAuth2User.getAttributes(), oAuth2User.getAuthorities());
-
     }
-
     private CustomOAuth2User createCustomOAuth2User(Members members, Map<String, Object> attributes, Collection<? extends GrantedAuthority> authorities) {
         UserManageDTO userDTO = UserManageDTO.builder()
                 .email(members.getEmail())
@@ -103,4 +100,5 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         return new CustomOAuth2User(userDTO);
     }
+
 }

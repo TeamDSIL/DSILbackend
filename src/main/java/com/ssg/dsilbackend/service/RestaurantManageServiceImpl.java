@@ -11,16 +11,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
 import java.time.temporal.WeekFields;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import weka.classifiers.timeseries.WekaForecaster;
-import weka.classifiers.timeseries.core.TSLagUser;
-import weka.core.Instances;
-import weka.core.converters.ArffSaver;
-import weka.core.converters.ConverterUtils.DataSource;
-import weka.classifiers.evaluation.NumericPrediction;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -43,6 +39,8 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
     private final FacilityRepository facilityRepository;
     private final MenuRepository menuRepository;
 
+//    감정분석을 위한 감정분석 서비스 추가
+private SentimentAnalysisService sentimentAnalysisService;
 
     @Autowired
     public RestaurantManageServiceImpl(RestaurantManageRepository restaurantManageRepository, ReserveRepository reserveRepository, ReviewRepository reviewRepository, ReplyRepository replyRepository, ModelMapper modelMapper, RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, FacilityRepository facilityRepository, MenuRepository menuRepository) {
@@ -392,20 +390,22 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
     }
 
 
-    private ReviewDTO convertToReviewDto(Review review) {
-        return ReviewDTO.builder()
-                .id(review.getId())
-                .replyId(review.getReply().getId())
-                .replyContent(review.getReply().getContent())
-                .reservationId(review.getReservation().getId())
-                .content(review.getContent())
-                .registerDate(review.getRegisterDate())  // 예제에서 LocalDate로 가정
-                .score(review.getScore())
-                .deleteStatus(review.isDeleteStatus())
-                .img(review.getImg())
-                .reservationName(review.getReservation().getReservationName())
-                .build();
-    }
+//    reply가 null일 경우에도 대처할 수 있도록 수정
+private ReviewDTO convertToReviewDto(Review review) {
+    return ReviewDTO.builder()
+            .id(review.getId())
+            .replyId(review.getReplyId())
+            .replyContent(review.getReply() != null ? review.getReply().getContent() : "") // Reply가 null일 경우 처리
+            .reservationId(review.getReservation().getId())
+            .content(review.getContent())
+            .registerDate(review.getRegisterDate()) // 예제에서 LocalDate로 가정
+            .score(review.getScore())
+            .deleteStatus(review.isDeleteStatus())
+            .img(review.getImg())
+            .reservationName(review.getReservation().getReservationName())
+            .build();
+}
+
 
     @Override
     public List<CategoryDTO> getCategoryList(Long restaurantId) {
@@ -493,5 +493,17 @@ public class RestaurantManageServiceImpl implements RestaurantManageService {
                 .reservationTel(reservation.getReservationTel())
                 .build();
     }
+
+//    감정분석을 위한 메소드 추가
+@Transactional
+public Review saveReview(Review review) {
+    try {
+        String sentiment = sentimentAnalysisService.analyzeSentiment(review.getContent());
+        review.setSentiment(sentiment);
+    } catch (IOException e) {
+        // 에러 처리
+    }
+    return reviewRepository.save(review);
+}
 
 }

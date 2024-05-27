@@ -52,7 +52,8 @@ public interface RestaurantManageService {
     Map<Integer, Long> getWeeklyReservations(Long restaurantId, int year);
     List<ReservationDTO> getReservationsByDateRange(LocalDate startDate, LocalDate endDate);
 
-    //리뷰에 자동으로 답글달기
+    //감정분석위한 메소드
+    Review saveReview(Review review);
 
 
 }

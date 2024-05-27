@@ -27,3 +27,4 @@ public class ReviewDTO {
     private String img;
     private String reservationName;
 }
+//reply가 null인 경우에도 대처할 수 있게 수정하였다
