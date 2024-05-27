@@ -209,18 +209,18 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                 .collect(Collectors.toList());
     }
 
-    // 북마크 추가 및 삭제
-    public void addBookmark(Long memberId, Long restaurantId) {
-        if (!bookmarkRepository.existsByMemberIdAndRestaurantId(memberId, restaurantId)) {
-            Bookmark bookmark = new Bookmark();
-            bookmark.setMember(new Member().getId());
-            bookmark.setRestaurant(new Restaurant().getId());
-            bookmarkRepository.save(bookmark);
-        }
-    }
-
-    public void removeBookmark(Long memberId, Long restaurantId) {
-        bookmarkRepository.deleteByMemberIdAndRestaurantId(memberId, restaurantId);
-    }
+//    // 북마크 추가 및 삭제
+//    public void addBookmark(Long memberId, Long restaurantId) {
+//        if (!bookmarkRepository.existsByMemberIdAndRestaurantId(memberId, restaurantId)) {
+//            Bookmark bookmark = new Bookmark();
+//            bookmark.setMember(new Member().getId());
+//            bookmark.setRestaurant(new Restaurant().getId());
+//            bookmarkRepository.save(bookmark);
+//        }
+//    }
+//
+//    public void removeBookmark(Long memberId, Long restaurantId) {
+//        bookmarkRepository.deleteByMemberIdAndRestaurantId(memberId, restaurantId);
+//    }
 }
 
