@@ -222,6 +222,5 @@ public class RestaurantListServiceImpl implements RestaurantListService {
 //    public void removeBookmark(Long memberId, Long restaurantId) {
 //        bookmarkRepository.deleteByMemberIdAndRestaurantId(memberId, restaurantId);
 //    }
-//
 }
 
