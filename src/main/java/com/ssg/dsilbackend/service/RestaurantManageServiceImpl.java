@@ -14,18 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.temporal.WeekFields;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import weka.classifiers.timeseries.WekaForecaster;
-import weka.classifiers.timeseries.core.TSLagUser;
-import weka.core.Instances;
-import weka.core.converters.ArffSaver;
-import weka.core.converters.ConverterUtils.DataSource;
-import weka.classifiers.evaluation.NumericPrediction;
-
-import java.io.File;
-import java.io.FileWriter;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
