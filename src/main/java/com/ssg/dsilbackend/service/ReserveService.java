@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-@Transactional
 public class ReserveService {
     private final MemberRepository memberRepository;
     private final RestaurantListRepository restaurantRepository;
@@ -30,6 +29,7 @@ public class ReserveService {
     private final PaymentRepository paymentRepository;
 
     //예약 생성 메서드
+    @Transactional
     public Long processReservation(ReserveDTO reserveDTO) {
         try {
             Members member = memberRepository.findById(reserveDTO.getMemberId())
@@ -98,7 +98,24 @@ public class ReserveService {
         }
     }
 
+    //테이블 선점
+    @Transactional
+    public void reserveTable(Long restaurantId, int numberOfTables) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new EntityNotFoundException("식당 아이디 없음"));
+        restaurant.reduceTable((long) numberOfTables);
+        restaurantRepository.save(restaurant);
+    }
+
+    //선점한 테이블 반납
+    @Transactional
+    public void cancelTableReservation(Long restaurantId, int numberOfTables) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new EntityNotFoundException("식당 아이디 없음"));
+        restaurant.recoverTable((long) numberOfTables);
+        restaurantRepository.save(restaurant);
+    }
+
     //예약 취소 메서드
+    @Transactional
     public void cancelReservation(Long reservationId) {
         try {
             Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Reservation Not Found with ID: " + reservationId));

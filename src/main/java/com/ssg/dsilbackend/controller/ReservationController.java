@@ -23,6 +23,7 @@ public class ReservationController {
 
     private final ReserveService reservationService;
     private final RestaurantRepository restaurantRepository;
+    private final ReserveService reserveService;
 
     //예약 생성 과정
     @PostMapping("/detail")
@@ -44,9 +45,7 @@ public class ReservationController {
         int numberOfTables = reservationDTO.getNumberOfTables();
         log.info(numberOfTables);
         try {
-            Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new EntityNotFoundException("식당 아이디 없음"));
-            restaurant.reduceTable((long) numberOfTables);
-            restaurantRepository.save(restaurant);
+            reserveService.reserveTable(restaurantId,numberOfTables);
             return ResponseEntity.status(HttpStatus.CREATED).body("테이블 먼저 차감");
         } catch (Exception e) {
             log.error("테이블 선점 실패: {}", e.getMessage());
@@ -61,10 +60,7 @@ public class ReservationController {
         int numberOfTables = reservationDTO.getNumberOfTables();
 
         try {
-            Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new EntityNotFoundException("식당 아이디 없음"));
-            log.info(numberOfTables);
-            restaurant.recoverTable((long) numberOfTables);
-            restaurantRepository.save(restaurant);
+            reserveService.cancelTableReservation(restaurantId, numberOfTables);
             return ResponseEntity.status(HttpStatus.OK).body("테이블 복원 완료");
         }catch (Exception e){
             log.error("테이블 복원 실패: {}", e.getMessage());
