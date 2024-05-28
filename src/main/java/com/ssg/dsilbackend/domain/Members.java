@@ -71,6 +71,7 @@ public class Members {
         // Point 엔티티의 currentPoint 값을 수정
         if (userManageDTO.getPoint() != null) {
             this.point.setCurrentPoint(userManageDTO.getPoint().getCurrentPoint());
+            this.point.setAccumulatePoint(userManageDTO.getPoint().getAccumulatePoint());
         }
     }
     public void setOwnerPostcode(){

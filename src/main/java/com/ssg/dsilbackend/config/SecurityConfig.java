@@ -65,7 +65,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+                        configuration.setAllowedOrigins(List.of("http://101.79.8.1:3000"));
                         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
@@ -96,12 +96,13 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-//                        .requestMatchers("/","/signup*","/login*").permitAll()
-//                        .requestMatchers("/user").hasAuthority("USER")
-//                        .requestMatchers("/manager").hasAuthority("MANAGER")
-//                        .requestMatchers("/admin").hasAuthority("ADMIN")
-
-//                        .requestMatchers("/memberManage/loginPage", "/", "/memberManage/signupPage", "/oauth2/**","/memberManage/adminManageUserPage").permitAll()
+//                        .requestMatchers("/","/main/**","/memberManage/signup*",
+//                                "/memberManage/login*","/memberManage/find*",
+//                                "/oauth2/**","/userInfo/**","memberManage/userMyPage?email*").permitAll()
+//                        .requestMatchers("/memberManage/userMyPage","/myDining/myDining*").hasAuthority("USER")
+//                        .requestMatchers("/memberManage/ownerMy*").hasAuthority("OWNER")
+//                        .requestMatchers("/memberManage/adminManage*").hasAuthority("ADMIN")
+//                        .anyRequest().authenticated());
                         .anyRequest().permitAll());
 
 //

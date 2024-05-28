@@ -27,6 +27,4 @@ public class Refresh {
 
     @Column(name = "refresh_expiration")
     private String expiration;
-
 }
-

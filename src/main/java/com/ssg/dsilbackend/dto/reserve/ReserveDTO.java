@@ -24,4 +24,6 @@ public class ReserveDTO {
     private LocalDate reservationDate;
     private String reservationTel;
     private LocalDateTime createdTime;
+    private int numberOfTables;
+
 }
