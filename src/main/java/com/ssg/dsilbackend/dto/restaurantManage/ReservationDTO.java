@@ -20,4 +20,6 @@ public class ReservationDTO {
     private String requestContent;
     private LocalDate reservationDate;
     private String reservationTel;
+    private int numberOfTables;
+
 }

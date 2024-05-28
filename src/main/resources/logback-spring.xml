@@ -4,7 +4,7 @@
     <!-- Server Log Config -->
     <property resource="application.properties"/>
     <!-- log file path -->
-    <property name="LOG_PATH" value="/Users/imhwan/Downloads/log"/>
+    <property name="LOG_PATH" value="/Users/hwije/Downloads/log"/>
     <!-- log file name -->
     <property name="LOG_FILE_NAME" value="dsilbackend.log"/>
     <!-- err log file name -->
@@ -14,7 +14,9 @@
         <property resource="application.properties"/>
         <!-- log file path -->
 
-        <property name="LOG_PATH" value="/Users/imhwan/log"/>
+        <property name="LOG_PATH" value="/Users/hwije/log"/>
+
+
 
 
     <appender name="DEV_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
