@@ -198,15 +198,9 @@ public class UserManageServiceImpl implements UserManageService {
     // 식당 관리자의 회원 정보 수정
     @Override
     public void modifyOwnerInfo(OwnerManageDTO ownerManageDTO) {
-        Optional<Members> userInfo = userManageRepository.findByEmail(ownerManageDTO.getEmail());
-        Members members = userInfo.orElseThrow(() -> new RuntimeException("User not found"));
-
         Restaurant restaurantInfo = restaurantRepository.getRestaurantById(ownerManageDTO.getId());
         restaurantInfo.updateRestaurantInfo(ownerManageDTO);
-        members.updatePassword(bCryptPasswordEncoder.encode(ownerManageDTO.getPassword()));
 
-        userManageRepository.save(members);
-        log.info(members);
         restaurantRepository.save(restaurantInfo);
         log.info(restaurantInfo);
     }

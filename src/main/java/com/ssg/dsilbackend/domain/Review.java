@@ -49,8 +49,6 @@ public class Review {
         this.sentiment = sentiment;
     }
 
-
-
     public void setReply(Reply reply) {
         this.reply = reply;
     }
