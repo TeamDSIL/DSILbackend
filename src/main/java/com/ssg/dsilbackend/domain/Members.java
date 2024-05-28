@@ -1,6 +1,5 @@
 package com.ssg.dsilbackend.domain;
 
-import com.ssg.dsilbackend.dto.userManage.OwnerManageDTO;
 import com.ssg.dsilbackend.dto.userManage.UserManageDTO;
 import jakarta.persistence.*;
 import lombok.*;

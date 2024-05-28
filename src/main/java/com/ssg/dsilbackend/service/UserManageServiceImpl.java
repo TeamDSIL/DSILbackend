@@ -47,6 +47,12 @@ public class UserManageServiceImpl implements UserManageService {
 
     //    ----------------------------------------------- User
 
+
+    @Override
+    public Boolean checkEmail(String email) {
+        return userManageRepository.existsByEmail(email);
+    }
+
     // 회원가입 #테스트 성공
     @Override
     public void signUp(UserManageDTO userManageDTO) {
@@ -254,6 +260,7 @@ public class UserManageServiceImpl implements UserManageService {
     }
 
     @Override
+    @Transactional
     public void removeRestaurantByName(String name) {
         restaurantRepository.removeByName(name);
     }

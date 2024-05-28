@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface UserManageService {
 
+    Boolean checkEmail(String email);
     void signUp(UserManageDTO userManageDTO);
     UserManageDTO getUserInfoByEmail(String email);
     void modifyUserInfo(UserManageDTO userManageDTO);
