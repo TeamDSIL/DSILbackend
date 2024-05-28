@@ -28,6 +28,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         log.info(members);
 
+        if (!members.isStatus()) {
+            throw new UsernameNotFoundException("해당 계정은 비활성화 상태입니다.");
+        }
+
         // Optional 을 벗겨서 CustomUserDetails 객체로 변환하여 반환합니다.
         return new CustomUserDetails(members);
     }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 @Builder
@@ -26,5 +28,5 @@ public class Refresh {
     private String refresh;
 
     @Column(name = "refresh_expiration")
-    private String expiration;
+    private LocalDateTime expiration;
 }

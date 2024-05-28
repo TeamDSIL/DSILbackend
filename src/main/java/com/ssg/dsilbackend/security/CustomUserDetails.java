@@ -57,6 +57,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return members.isStatus(); // status 값이 false인 경우 로그인을 막음
     }
 }

@@ -42,6 +42,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final RefreshRepository refreshRepository;
+//    private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
@@ -87,7 +88,7 @@ public class SecurityConfig {
                 //http basic 인증 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable);
 
-        //JWTFilter 추가 @
+        //JWTFilter 추가
         http
                 .addFilterBefore(new JWTFilter(jwtUtil, permissionManageRepository), UsernamePasswordAuthenticationFilter.class);
 
@@ -124,7 +125,8 @@ public class SecurityConfig {
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         http
                 .addFilterBefore(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
-
+//        http
+//                .authenticationProvider(customAuthenticationProvider);
         //세션 설정
         http
                 .sessionManagement((session) -> session
