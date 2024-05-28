@@ -6,8 +6,10 @@ import com.ssg.dsilbackend.dto.ReservationStateName;
 import com.ssg.dsilbackend.dto.reserve.ReserveDTO;
 import com.ssg.dsilbackend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -37,10 +39,6 @@ public class ReserveService {
 
             Restaurant restaurant = restaurantRepository.findById(reserveDTO.getRestaurantId())
                     .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + reserveDTO.getRestaurantId()));
-
-            if (restaurant.getTableCount() <= 0) {
-                throw new RuntimeException("예약 가능한 테이블이 없습니다");
-            }
 
             String name = member.getName();
             String phone = member.getTel();
@@ -100,6 +98,7 @@ public class ReserveService {
 
     //테이블 선점
     @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public void reserveTable(Long restaurantId, int numberOfTables) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new EntityNotFoundException("식당 아이디 없음"));
         restaurant.reduceTable((long) numberOfTables);
@@ -108,6 +107,7 @@ public class ReserveService {
 
     //선점한 테이블 반납
     @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public void cancelTableReservation(Long restaurantId, int numberOfTables) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new EntityNotFoundException("식당 아이디 없음"));
         restaurant.recoverTable((long) numberOfTables);
