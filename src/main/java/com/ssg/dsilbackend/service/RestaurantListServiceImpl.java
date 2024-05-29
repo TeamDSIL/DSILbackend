@@ -212,6 +212,12 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public void incrementViewCount(Long id) {
+        restaurantListRepository.incrementViewCount(id);
+    }
+
 
     // 북마크 추가
     public void addBookmark(Long memberId, Long restaurantId) {
