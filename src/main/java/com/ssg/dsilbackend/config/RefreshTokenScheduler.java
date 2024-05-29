@@ -21,8 +21,7 @@ public class RefreshTokenScheduler {
         log.info("Starting cleanup of expired refresh tokens");
 
         LocalDateTime now = LocalDateTime.now();
-        String nowStr = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        refreshRepository.deleteByExpirationBefore(nowStr);
+        refreshRepository.deleteByExpirationBefore(now);
 
         log.info("Cleanup of expired refresh tokens completed");
     }

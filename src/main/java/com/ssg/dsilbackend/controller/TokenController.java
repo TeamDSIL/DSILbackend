@@ -36,8 +36,8 @@ public class TokenController {
         }
 
         // Principal 객체의 각 필드 값을 개별적으로 로그 출력
-        log.info("Username: " + userDetails.getUsername());
-        log.info("Email: " + userDetails.getEmail());
+        log.info("Username: {}", userDetails.getUsername());
+        log.info("Email: {}", userDetails.getEmail());
 
 
         // 권한 정보 로그 추가
@@ -53,7 +53,7 @@ public class TokenController {
         Optional<Members> userData = userManageRepository.findByEmail(email);
 
         if (!userData.isPresent()) {
-            log.error("User not found for email: " + email);
+            log.error("User not found for email: {}", email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 

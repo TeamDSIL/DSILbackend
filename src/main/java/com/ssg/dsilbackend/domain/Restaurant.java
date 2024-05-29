@@ -7,12 +7,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "restaurant")
 public class Restaurant {
     @Id
@@ -52,20 +52,20 @@ public class Restaurant {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Members member;
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Category> categories;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    private Set<Category> categories;
 
     // JsonManagedReference: Menu와 Facility간 역참조를 막아 무한재귀를 막음
-    @OneToMany(mappedBy = "restaurant")
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Menu> menus;
 
-    @OneToMany(mappedBy = "restaurant")
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Facility> facilities;
+    private Set<Facility> facilities;
 
     //감정분석을 위한 review리스트 추가
-    @OneToMany(mappedBy = "restaurant")
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Reservation> reservations;
 
@@ -99,6 +99,13 @@ public class Restaurant {
     public void recoverTable(Long tableCount) {
         this.tableCount += tableCount;
     }
+    // Constructor
+    public Restaurant(Long id) {
+        this.id = id;
+    }
+
+    // Default constructor for JPA
+    protected Restaurant() {}
 
 }
 
