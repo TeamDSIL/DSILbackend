@@ -1,18 +1,13 @@
 package com.ssg.dsilbackend.domain;
 
-import com.ssg.dsilbackend.dto.userManage.OwnerManageDTO;
 import com.ssg.dsilbackend.dto.userManage.UserManageDTO;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-@ToString
 @Table(name = "members")
 public class Members {
     @Id
@@ -73,9 +68,17 @@ public class Members {
             this.point.setCurrentPoint(userManageDTO.getPoint().getCurrentPoint());
         }
     }
+
     public void setOwnerPostcode(){
         this.postcode = "000000";
     }
+    // Constructor - 즐겨찾기 생성 , 상현
+    public Members(Long id) {
+        this.id = id;
+    }
+
+    // Default constructor - 즐겨찾기 삭제 , 상현
+    protected Members() {}
 
 
 }

@@ -3,6 +3,7 @@ package com.ssg.dsilbackend.service;
 import com.ssg.dsilbackend.domain.*;
 import com.ssg.dsilbackend.dto.CategoryName;
 import com.ssg.dsilbackend.dto.FacilityName;
+import com.ssg.dsilbackend.dto.restaurantList.RestaurantBookmarkDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantDetailDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantListDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantReviewDTO;
@@ -26,6 +27,7 @@ public class RestaurantListServiceImpl implements RestaurantListService {
     private final ReviewRepository reviewRepository;
     private final FacilityRepository facilityRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public List<RestaurantDetailDTO> findMenus(Long id) {  // 식당아이디 기준으로 식당 상세페이지에 데이터를 불러오는 메소드
@@ -194,6 +196,7 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                 scoreCounts.getOrDefault(5, 0L)
         );
         return reviewList.stream()
+                .sorted((r1, r2) -> r2.getRegisterDate().compareTo(r1.getRegisterDate()))
                 .map(review ->
                         RestaurantReviewDTO.builder()
                                 .restaurant_id(restaurantId)
@@ -209,18 +212,16 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                 .collect(Collectors.toList());
     }
 
-//    // 북마크 추가 및 삭제
-//    public void addBookmark(Long memberId, Long restaurantId) {
-//        if (!bookmarkRepository.existsByMemberIdAndRestaurantId(memberId, restaurantId)) {
-//            Bookmark bookmark = new Bookmark();
-//            bookmark.setMember(new Member().getId());
-//            bookmark.setRestaurant(new Restaurant().getId());
-//            bookmarkRepository.save(bookmark);
-//        }
-//    }
-//
-//    public void removeBookmark(Long memberId, Long restaurantId) {
-//        bookmarkRepository.deleteByMemberIdAndRestaurantId(memberId, restaurantId);
-//    }
+    // 북마크 추가
+    public void addBookmark(Long memberId, Long restaurantId) {
+        Members member = memberRepository.findById(memberId).orElseThrow();
+        Restaurant restaurant = restaurantListRepository.findById(restaurantId).orElseThrow();
+        Bookmark bookmark = new Bookmark(member, restaurant);
+        bookmarkRepository.save(bookmark);
+    }
+//  북마크 삭제
+    public void removeBookmark(RestaurantBookmarkDTO restaurantBookmarkDTO) {
+        bookmarkRepository.deleteByMembersIdAndRestaurantId(restaurantBookmarkDTO.getMemberId(), restaurantBookmarkDTO.getRestaurantId());
+    }
 }
 
