@@ -43,7 +43,7 @@ public class RestaurantListController {
     @PostMapping("/bookmark")
     public ResponseEntity<?> addBookmark(@RequestBody RestaurantBookmarkDTO bookmarkDTO) {
         try {
-            restaurantListService.addBookmark(bookmarkDTO.getRestaurantId(),bookmarkDTO.getMemberId());
+            restaurantListService.addBookmark(bookmarkDTO.getMember_id(),bookmarkDTO.getRestaurant_id());
             return ResponseEntity.ok("북마크 생성 성공");
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());

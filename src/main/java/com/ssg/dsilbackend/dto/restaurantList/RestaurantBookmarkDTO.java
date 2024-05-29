@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestaurantBookmarkDTO {
-    private Long memberId;
-    private Long restaurantId;
+    private Long member_id;
+    private Long restaurant_id;
 }
 
