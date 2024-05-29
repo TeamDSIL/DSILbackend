@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "restaurant")
 public class Restaurant {
     @Id
