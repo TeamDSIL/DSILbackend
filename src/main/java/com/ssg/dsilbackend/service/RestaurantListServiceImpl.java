@@ -250,7 +250,7 @@ public class RestaurantListServiceImpl implements RestaurantListService {
     }
 //  북마크 삭제
     public void removeBookmark(RestaurantBookmarkDTO restaurantBookmarkDTO) {
-        bookmarkRepository.deleteByMembersIdAndRestaurantId(restaurantBookmarkDTO.getMemberId(), restaurantBookmarkDTO.getRestaurantId());
+        bookmarkRepository.deleteByMembersIdAndRestaurantId(restaurantBookmarkDTO.getMember_id(), restaurantBookmarkDTO.getRestaurant_id());
     }
 }
 
