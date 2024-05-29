@@ -226,7 +226,7 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                         .score(Double.valueOf(review.getScore()))
                         .registerDate(review.getRegisterDate())
                         .review_img(review.getImg())
-                        .name(String.valueOf(review.getReservation()))
+                        .name(String.valueOf(review.getReservation().getReservationName()))
                         .averageScore(roundedAverageScore)
                         .reviewCount((long) reviewList.size())
                         .ratingsCount(ratingsCount)
