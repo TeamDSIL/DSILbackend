@@ -11,10 +11,11 @@ import lombok.*;
 @ToString
 @Table(name = "bookmark")
 public class Bookmark {
-    @Id
+   @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookmarks_id")
     private Long id;
+
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
@@ -23,6 +24,14 @@ public class Bookmark {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+    // Constructor - 즐겨찾기 생성 
+    public Bookmark(Members members, Restaurant restaurant) {
+        this.members = members;
+        this.restaurant = restaurant;
+    }
+
+    // Default constructor - 즐겨찾기 삭제
+    protected Bookmark() {}
 
 
 }
