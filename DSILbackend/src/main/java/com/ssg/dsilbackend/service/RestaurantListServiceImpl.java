@@ -211,7 +211,7 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                                 .build())
                 .collect(Collectors.toList());
     }
-
+// d
 
     // 북마크 추가
     public void addBookmark(Long memberId, Long restaurantId) {
