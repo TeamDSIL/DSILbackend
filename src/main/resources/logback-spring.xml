@@ -5,7 +5,9 @@
     <property resource="application.properties"/>
     <!-- log file path -->
 
-    <property name="LOG_PATH" value="finallog/log"/>
+
+    <property name="LOG_PATH" value="/Users/hwije/log"/>
+
     <!-- log file name -->
     <property name="LOG_FILE_NAME" value="dsilbackend.log"/>
     <!-- err log file name -->
