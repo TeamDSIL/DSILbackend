@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -95,26 +96,30 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
 
-                        .requestMatchers("/memberManage/UserMyPage*","/myDining/**")
+                        .requestMatchers("/memberManage/userMyPage*","/myDining/**")
                         .hasAuthority("USER")
 
-
-                        .requestMatchers("/memberManage/OwnerMy*","/restaurant/restaurant*")
+                        .requestMatchers("/memberManage/ownerMy*","/restaurant/restaurant*")
                         .hasAuthority("OWNER")
 
-                        .requestMatchers("/memberManage/AdminManage*")
+                        .requestMatchers("/memberManage/adminManage*")
                         .hasAuthority("ADMIN")
+
+                        .requestMatchers("/userInfo/**").hasAnyAuthority("USER","OWNER","ADMIN")
 
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
 
-                        .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*",
-                                "/memberManage/find*", "/oauth2/**", "/userInfo/**").permitAll()
+                        .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*", "/restaurant/list*", "restaurant/detail*",
+                                "/memberManage/find*", "/oauth2/**").permitAll()
 
                         .anyRequest().authenticated());
 
 //                        .anyRequest().permitAll());
 
-//
+        http
+                .exceptionHandling((exceptionHandling)->exceptionHandling
+                        .accessDeniedPage("/access-denied"));
+
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
@@ -125,10 +130,10 @@ public class SecurityConfig {
                         .failureUrl("/memberManage/loginPage?error=true"));
 
         //JWTFilter 추가
-//        http
-//                .addFilterAfter(new JWTFilter(jwtUtil, permissionManageRepository), OAuth2LoginAuthenticationFilter.class);
-//        http
-//                .addFilterAt(new JWTFilter(jwtUtil, permissionManageRepository), LoginFilter.class);
+        http
+                .addFilterAfter(new JWTFilter(jwtUtil, permissionManageRepository), OAuth2LoginAuthenticationFilter.class);
+        http
+                .addFilterAt(new JWTFilter(jwtUtil, permissionManageRepository), LoginFilter.class);
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         http
@@ -137,7 +142,6 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
 
         return http.build();
     }

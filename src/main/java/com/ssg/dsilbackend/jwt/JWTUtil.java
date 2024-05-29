@@ -5,6 +5,7 @@ import com.ssg.dsilbackend.oAuth2.CustomOAuth2User;
 import com.ssg.dsilbackend.repository.RefreshRepository;
 import com.ssg.dsilbackend.security.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,11 +54,17 @@ public class JWTUtil {
 
     public Boolean isExpired(String token) {
         try {
+            log.info("Token: {}", token); // 토큰 값 확인
             return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
+            log.warn("Token expired: {}", token);
+            return true;
+        } catch (JwtException e) {
+            log.error("Invalid token: {}", token, e);
             return true;
         }
     }
+
 
     private String createToken(Map<String, Object> claims, Long expiredMs) {
         var jwtBuilder = Jwts.builder()
