@@ -19,4 +19,10 @@ public interface RestaurantListRepository extends JpaRepository<Restaurant, Long
     @Modifying
     @Query("UPDATE Restaurant r SET r.count = r.count + 1 WHERE r.id = :id")
     void incrementViewCount(@Param("id") Long id);
+
+    
+    @Query("SELECT r FROM Restaurant r " +
+            "LEFT JOIN FETCH r.categories c " +
+            "LEFT JOIN FETCH r.facilities f")
+    List<Restaurant> findAllWithDetails();
 }
