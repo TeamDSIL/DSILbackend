@@ -20,14 +20,14 @@ public class MainController {
     @Autowired
     private MainService mainService;
 
-    @GetMapping("restaurants/category/{categoryName}")
-    public ResponseEntity<List<MainDTO>> getRestaurantsByCategory(@PathVariable CategoryName categoryName) {
-        List<MainDTO> restaurants = mainService.findByCategoryName(categoryName);
-        if (restaurants.isEmpty()) {
-            return ResponseEntity.notFound().build(); // 카테고리에 해당하는 식당이 없는 경우 404 Not Found 반환
-        }
-        return ResponseEntity.ok(restaurants); // 정상적으로 데이터가 있으면 200 OK와 함께 데이터 반환
-    }
+//    @GetMapping("restaurants/category/{categoryName}")
+//    public ResponseEntity<List<MainDTO>> getRestaurantsByCategory(@PathVariable CategoryName categoryName) {
+//        List<MainDTO> restaurants = mainService.findByCategoryName(categoryName);
+//        if (restaurants.isEmpty()) {
+//            return ResponseEntity.notFound().build(); // 카테고리에 해당하는 식당이 없는 경우 404 Not Found 반환
+//        }
+//        return ResponseEntity.ok(restaurants); // 정상적으로 데이터가 있으면 200 OK와 함께 데이터 반환
+//    }
 
     // 카카오 맵
     @GetMapping("/api/restaurants")
