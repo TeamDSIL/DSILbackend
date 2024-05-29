@@ -94,22 +94,25 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-//
-//                        .requestMatchers("/memberManage/UserMyPage*","/myDining/**")
-//                        .hasAuthority("USER")
-//
-//                        .requestMatchers("/memberManage/OwnerMy*")
-//                        .hasAuthority("OWNER")
-//
-//                        .requestMatchers("/memberManage/AdminManage*")
-//                        .hasAuthority("ADMIN")
-//
-//                        .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-//                        .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*",
-//                                "/memberManage/find*", "/oauth2/**", "/userInfo/**").permitAll()
-//
-//                        .anyRequest().authenticated());
-                        .anyRequest().permitAll());
+
+                        .requestMatchers("/memberManage/UserMyPage*","/myDining/**")
+                        .hasAuthority("USER")
+
+
+                        .requestMatchers("/memberManage/OwnerMy*","/restaurant/restaurant*")
+                        .hasAuthority("OWNER")
+
+                        .requestMatchers("/memberManage/AdminManage*")
+                        .hasAuthority("ADMIN")
+
+                        .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
+
+                        .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*",
+                                "/memberManage/find*", "/oauth2/**", "/userInfo/**").permitAll()
+
+                        .anyRequest().authenticated());
+
+//                        .anyRequest().permitAll());
 
 //
         //oauth2
@@ -134,6 +137,7 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
 
         return http.build();
     }
