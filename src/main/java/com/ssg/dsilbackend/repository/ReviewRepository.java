@@ -26,6 +26,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findByReservationRestaurantId(Long restaurantId);
     boolean existsByReservationId(Long reservationId);
+    @Query("SELECT r FROM Review r JOIN FETCH r.reservation res WHERE res.restaurant.id = :restaurantId") //지워버릴지도
+    List<Review> findByReservationRestaurantIdWithFetchJoin(@Param("restaurantId") Long restaurantId);
+
+    @Query("SELECT r FROM Review r JOIN FETCH r.reservation res")
+    List<Review> findAllWithReservation();
 }
 
 
