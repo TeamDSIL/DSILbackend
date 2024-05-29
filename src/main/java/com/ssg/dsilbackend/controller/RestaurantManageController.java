@@ -264,10 +264,7 @@ public class RestaurantManageController {
         return restaurantManageService.getWeeklyReservations(restaurantId, year);
     }
 
-    @GetMapping("/by-date-range")
-    public List<ReservationDTO> getReservationsByDateRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
-        return restaurantManageService.getReservationsByDateRange(startDate, endDate);
-    }
+
 
     //감정분석을 위한 api 포인트 작성
     @GetMapping("/{id}/sentiment")

@@ -16,9 +16,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelToMySQL {
     public static void main(String[] args) {
-        String jdbcURL = "jdbc:mysql://db-n0vsi-kr.vpc-pub-cdb.ntruss.com:3306/dsilDB?useUnicode=true&serverTimezone=Asia/Seoul";
+        String jdbcURL = "jdbc:mysql://db-n56ke-kr.vpc-pub-cdb.ntruss.com:3306/dsilDB?useUnicode=true&serverTimezone=Asia/Seoul";
         String username = "dsiluser";
-        String password = "whatdang444!"; // 여기에 올바른 비밀번호를 입력하세요
+        String password = "whatdang444!";
 
         String excelFilePath = "C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/sheet4.xlsx";
 
