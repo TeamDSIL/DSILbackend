@@ -1,6 +1,8 @@
 package com.ssg.dsilbackend.service;
 
 import com.ssg.dsilbackend.dto.CategoryName;
+import com.ssg.dsilbackend.dto.FacilityName;
+import com.ssg.dsilbackend.dto.restaurantList.RestaurantBookmarkDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantDetailDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantListDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantReviewDTO;
@@ -19,6 +21,6 @@ public interface RestaurantListService {
     void removeBookmark(RestaurantBookmarkDTO restaurantBookmarkDTO);
 
 
-    void incrementViewCount(Long id);  // 뷰 카운트 증가
+//    void incrementViewCount(Long id);  // 뷰 카운트 증가
 
 }
