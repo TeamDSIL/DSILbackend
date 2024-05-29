@@ -18,4 +18,10 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     @Query("SELECT b.restaurant FROM Bookmark b " +
             "GROUP BY b.restaurant.id ORDER BY COUNT(b.id) DESC")
     Page<Restaurant> findTopByBookmarks(Pageable pageable);
+
+    
+    //상현
+    // 식당 상세페이지에서 즐겨찾기 추가 및 삭제 기능
+    void deleteByMembersIdAndRestaurantId(Long memberId, Long restaurantId);
+    boolean existsByMembersIdAndRestaurantId(Long memberId, Long restaurantId);
 }
