@@ -17,11 +17,14 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 
 @Component
 @Log4j2
@@ -29,23 +32,22 @@ public class JWTUtil {
     private final SecretKey secretKey;
     private final RefreshRepository refreshRepository;
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy");
+
     public JWTUtil(@Value("${spring.jwt.secret}") String secret, RefreshRepository refreshRepository) {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
         this.refreshRepository = refreshRepository;
     }
 
     public String getEmail(String token) {
-
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
 
     public String getRole(String token) {
-
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
     public String getCategory(String token) {
-
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
@@ -155,18 +157,19 @@ public class JWTUtil {
 
     private void addRefreshEntity(String email, String refresh) {
         Date date = new Date(System.currentTimeMillis() + 86400000L);
+        Instant instant = date.toInstant();
+        LocalDateTime expiration = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 
         Refresh refreshOb = Refresh.builder()
                 .email(email)
                 .refresh(refresh)
-                .expiration(date.toString())
+                .expiration(expiration)
                 .build();
 
         refreshRepository.save(refreshOb);
     }
 
     public String createAccessToken(Authentication authentication) {
-
         String email = getEmailFromAuthentication(authentication);
         String role = getRoleFromAuthentication(authentication);
 
@@ -179,8 +182,7 @@ public class JWTUtil {
     }
 
     private String getEmailFromAuthentication(Authentication authentication) {
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
             return userDetails.getEmail();
         } else if (authentication.getPrincipal() instanceof CustomOAuth2User oAuth2User) {
             return oAuth2User.getEmail();

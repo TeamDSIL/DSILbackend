@@ -1,7 +1,9 @@
 package com.ssg.dsilbackend.dto.restaurantList;
 
+import com.ssg.dsilbackend.domain.Menu;
 import com.ssg.dsilbackend.dto.CategoryName;
 import com.ssg.dsilbackend.dto.Crowd;
+import com.ssg.dsilbackend.dto.FacilityName;
 import lombok.*;
 
 import java.util.List;
