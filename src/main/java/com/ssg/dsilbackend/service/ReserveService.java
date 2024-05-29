@@ -6,11 +6,12 @@ import com.ssg.dsilbackend.dto.ReservationStateName;
 import com.ssg.dsilbackend.dto.reserve.ReserveDTO;
 import com.ssg.dsilbackend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 /**
@@ -20,7 +21,6 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-@Transactional
 public class ReserveService {
     private final MemberRepository memberRepository;
     private final RestaurantListRepository restaurantRepository;
@@ -31,6 +31,7 @@ public class ReserveService {
     private final PaymentRepository paymentRepository;
 
     //예약 생성 메서드
+    @Transactional
     public Long processReservation(ReserveDTO reserveDTO) {
         try {
             Members member = memberRepository.findById(reserveDTO.getMemberId())
@@ -38,10 +39,6 @@ public class ReserveService {
 
             Restaurant restaurant = restaurantRepository.findById(reserveDTO.getRestaurantId())
                     .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with ID: " + reserveDTO.getRestaurantId()));
-
-            if (restaurant.getTableCount() <= 0) {
-                throw new RuntimeException("예약 가능한 테이블이 없습니다");
-            }
 
             String name = member.getName();
             String phone = member.getTel();
@@ -68,10 +65,6 @@ public class ReserveService {
             Reservation savedReservation = reservationRepository.save(reservation);
             Long reservationId = savedReservation.getId();
             log.info("예약 성공 : {}", reservationId);
-
-            int people = reserveDTO.getPeopleCount();
-            int tables = (int) Math.ceil((double) people / 4); // 예약한 인원을 4로 나눈 후 올림 처리하여 필요한 테이블 수 계산
-            restaurant.reduceTable((long) tables);
 
             //예약이 성공했을 경우 해당 회원에게 100포인트 적립
             Point point = member.getPoint();
@@ -103,7 +96,26 @@ public class ReserveService {
         }
     }
 
+    //테이블 선점
+    @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    public void reserveTable(Long restaurantId, int numberOfTables) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new EntityNotFoundException("식당 아이디 없음"));
+        restaurant.reduceTable((long) numberOfTables);
+        restaurantRepository.save(restaurant);
+    }
+
+    //선점한 테이블 반납
+    @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    public void cancelTableReservation(Long restaurantId, int numberOfTables) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new EntityNotFoundException("식당 아이디 없음"));
+        restaurant.recoverTable((long) numberOfTables);
+        restaurantRepository.save(restaurant);
+    }
+
     //예약 취소 메서드
+    @Transactional
     public void cancelReservation(Long reservationId) {
         try {
             Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Reservation Not Found with ID: " + reservationId));
@@ -126,7 +138,6 @@ public class ReserveService {
             String reservationTime = enumToTime(reservationTimeEnum);
 
             String CancelReservationInfo = String.format(reservationName + "고객님의 " + reservationDate + "일 " + reservationTime  + "시의 예약이 취소되었습니다.");
-
             String subject = "Dsil 서비스 예약 취소 알림";
             mimeMessageHelperService.sendEmail(email, subject, CancelReservationInfo);
 
