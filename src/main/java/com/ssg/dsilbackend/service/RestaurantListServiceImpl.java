@@ -100,6 +100,9 @@ public class RestaurantListServiceImpl implements RestaurantListService {
 //                .collect(Collectors.toList());
 //    }
     public List<RestaurantListDTO> findByFilters(List<CategoryName> categoryNames, List<FacilityName> facilityNames, String search) {
+        Map<Long, List<Review>> reviewsGroupedByRestaurant = getReviewsGroupedByRestaurant();
+        Map<Long, Double> averageScores = calculateAverageScores(reviewsGroupedByRestaurant);
+
         return restaurantListRepository.findAllWithDetails().stream()
                 .map(restaurant -> {
                     int matchCount = 0;
@@ -143,8 +146,11 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                             .map(Facility::getName)
                             .collect(Collectors.toList());
 
+                    // 평균 점수 가져오기
+                    double averageScore = averageScores.getOrDefault(restaurant.getId(), 0.0);
+
                     RestaurantListDTO dto = RestaurantListDTO.builder()
-                            .categoryNames(categories) // DTO의 categories는 CategoryName 리스트
+                            .categoryNames(categories)
                             .restaurant_id(restaurant.getId())
                             .restaurant_name(restaurant.getName())
                             .restaurant_img(restaurant.getImg())
@@ -153,41 +159,57 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                             .restaurant_crowd(restaurant.getCrowd())
                             .restaurant_table_count(restaurant.getTableCount())
                             .restaurant_address(restaurant.getAddress())
-                            .facilityNames(facilities) // DTO의 facilities는 FacilityName 리스트
+                            .facilityNames(facilities)
+                            .score(averageScore)
                             .build();
-                    dto.setMatchCount(matchCount); // 매칭된 조건 수 설정 (RestaurantListDTO에 matchCount 필드 추가 필요)
+                    dto.setMatchCount(matchCount);
 
                     return dto;
                 })
                 .filter(dto -> {
-                    // 모든 조건이 비어 있을 경우 모든 식당을 반환
                     if ((categoryNames == null || categoryNames.isEmpty()) &&
                             (facilityNames == null || facilityNames.isEmpty()) &&
                             (search == null || search.isEmpty())) {
                         return true;
                     }
-                    // 적어도 하나의 조건을 만족하는 DTO만 반환
                     return dto.getMatchCount() > 0;
                 })
-                .sorted(Comparator.comparingInt(RestaurantListDTO::getMatchCount).reversed()) // 매칭된 조건 수에 따라 정렬
+                .sorted(Comparator.comparingInt(RestaurantListDTO::getMatchCount).reversed())
                 .collect(Collectors.toList());
     }
 
+    public Map<Long, Double> calculateAverageScores(Map<Long, List<Review>> reviewsGroupedByRestaurant) {
+        return reviewsGroupedByRestaurant.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> {
+                    List<Review> reviews = entry.getValue();
+                    double averageScore = reviews.stream()
+                            .mapToDouble(review -> review.getScore() != null ? review.getScore() : 0.0)
+                            .average()
+                            .orElse(0.0);
+                    String formattedAverageScore = String.format("%.1f", averageScore);
+                    return Double.parseDouble(formattedAverageScore);
+                }
+        ));
+    }
+
+    public Map<Long, List<Review>> getReviewsGroupedByRestaurant() {
+        List<Review> reviews = reviewRepository.findAllWithReservation();
+        return reviews.stream().collect(Collectors.groupingBy(review -> review.getReservation().getRestaurant().getId()));
+    }
+
     @Override
-    public List<RestaurantReviewDTO> getRestaurntReviewsListById(Long restaurantId) { // 식당 아이디를 기준으로 리뷰 데이터 불러오기
-        List<Review> reviewList = reviewRepository.findByReservationRestaurantId(restaurantId);
-        // 평균 점수 계산
+    public List<RestaurantReviewDTO> getRestaurntReviewsListById(Long restaurantId) {
+        List<Review> reviewList = reviewRepository.findByReservationRestaurantIdWithFetchJoin(restaurantId);
         double averageScore = reviewList.stream()
-                .mapToDouble(Review::getScore)
+                .mapToDouble(review -> review.getScore() != null ? review.getScore() : 0.0)
                 .average()
                 .orElse(0.0);
         String formattedAverageScore = String.format("%.1f", averageScore);
-        double roundedAverageScore = Double.parseDouble(formattedAverageScore); // 평균점수를 소숫점 한자리까지만
-        // 각 점수별 리뷰 개수 계산
+        double roundedAverageScore = Double.parseDouble(formattedAverageScore);
         Map<Integer, Long> scoreCounts = reviewList.stream()
-                .collect(Collectors.groupingBy(review -> review.getScore().intValue(), Collectors.counting()));
+                .collect(Collectors.groupingBy(review -> review.getScore() != null ? review.getScore().intValue() : 0, Collectors.counting()));
 
-        // 1~5 점수별 리뷰 개수를 리스트로 저장
         List<Long> ratingsCount = Arrays.asList(
                 scoreCounts.getOrDefault(1, 0L),
                 scoreCounts.getOrDefault(2, 0L),
@@ -195,20 +217,20 @@ public class RestaurantListServiceImpl implements RestaurantListService {
                 scoreCounts.getOrDefault(4, 0L),
                 scoreCounts.getOrDefault(5, 0L)
         );
+
         return reviewList.stream()
                 .sorted((r1, r2) -> r2.getRegisterDate().compareTo(r1.getRegisterDate()))
-                .map(review ->
-                        RestaurantReviewDTO.builder()
-                                .restaurant_id(restaurantId)
-                                .content(review.getContent())
-                                .score(Double.valueOf(review.getScore()))
-                                .registerDate(review.getRegisterDate())
-                                .review_img(review.getImg())
-                                .name(review.getReservation().getReservationName())
-                                .averageScore(roundedAverageScore)
-                                .reviewCount((long) reviewList.size())
-                                .ratingsCount(ratingsCount)
-                                .build())
+                .map(review -> RestaurantReviewDTO.builder()
+                        .restaurant_id(restaurantId)
+                        .content(review.getContent())
+                        .score(Double.valueOf(review.getScore()))
+                        .registerDate(review.getRegisterDate())
+                        .review_img(review.getImg())
+                        .name(String.valueOf(review.getReservation()))
+                        .averageScore(roundedAverageScore)
+                        .reviewCount((long) reviewList.size())
+                        .ratingsCount(ratingsCount)
+                        .build())
                 .collect(Collectors.toList());
     }
 

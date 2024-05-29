@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -51,8 +52,8 @@ public class Restaurant {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Members member;
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Category> categories;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    private Set<Category> categories;
 
     // JsonManagedReference: Menu와 Facility간 역참조를 막아 무한재귀를 막음
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -61,7 +62,7 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Facility> facilities;
+    private Set<Facility> facilities;
 
     //감정분석을 위한 review리스트 추가
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
