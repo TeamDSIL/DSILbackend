@@ -13,7 +13,6 @@ import java.util.Set;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "restaurant")
 public class Restaurant {
     @Id
@@ -101,6 +100,14 @@ public class Restaurant {
     public void recoverTable(Long tableCount) {
         this.tableCount += tableCount;
     }
+
+    // Constructor
+    public Restaurant(Long id) {
+        this.id = id;
+    }
+
+    // Default constructor for JPA
+    protected Restaurant() {}
 
 }
 

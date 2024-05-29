@@ -1,5 +1,6 @@
 package com.ssg.dsilbackend.dto.restaurantList;
 
+import com.ssg.dsilbackend.domain.Menu;
 import com.ssg.dsilbackend.dto.CategoryName;
 import com.ssg.dsilbackend.dto.Crowd;
 import com.ssg.dsilbackend.dto.FacilityName;
@@ -17,6 +18,7 @@ public class RestaurantListDTO {
     private String restaurant_tel;
     private Crowd restaurant_crowd;
     private String restaurant_img;
+    private Menu menu_img;
     private Long restaurant_deposit;
     private Long restaurant_table_count;
     private CategoryName categoryName;

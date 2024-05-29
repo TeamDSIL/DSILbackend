@@ -7,7 +7,6 @@ import lombok.*;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @Table(name = "bookmark")
 public class Bookmark {
@@ -23,6 +22,13 @@ public class Bookmark {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+    // Constructor - 즐겨찾기 생성 , 상현
+    public Bookmark(Members members, Restaurant restaurant) {
+        this.members = members;
+        this.restaurant = restaurant;
+    }
 
+    // Default constructor - 즐겨찾기 삭제 , 상현
+    protected Bookmark() {}
 
 }

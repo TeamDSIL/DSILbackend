@@ -2,6 +2,7 @@ package com.ssg.dsilbackend.service;
 
 import com.ssg.dsilbackend.dto.CategoryName;
 import com.ssg.dsilbackend.dto.FacilityName;
+import com.ssg.dsilbackend.dto.restaurantList.RestaurantBookmarkDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantDetailDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantListDTO;
 import com.ssg.dsilbackend.dto.restaurantList.RestaurantReviewDTO;
@@ -15,6 +16,8 @@ public interface RestaurantListService {
     //    List<RestaurantListDTO> findByCategoryName(CategoryName categoryName);
 //    List<RestaurantListDTO> findByCategoryNames(List<CategoryName> categoryNames);
     List<RestaurantListDTO> findByFilters(List<CategoryName> categoryNames, List<FacilityName> facilities, String search);
+    void addBookmark(Long memberId, Long restaurantId);
+    void removeBookmark(RestaurantBookmarkDTO restaurantBookmarkDTO);
 
 
 }
