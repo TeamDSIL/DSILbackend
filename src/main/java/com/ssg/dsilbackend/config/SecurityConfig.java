@@ -18,7 +18,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -42,20 +41,19 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final RefreshRepository refreshRepository;
-//    private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-
         return configuration.getAuthenticationManager();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         // cors 설정
         http
@@ -67,7 +65,7 @@ public class SecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-                        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
+                        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -96,13 +94,20 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
+//
+//                        .requestMatchers("/memberManage/UserMyPage*","/myDining/**")
+//                        .hasAuthority("USER")
+//
+//                        .requestMatchers("/memberManage/OwnerMy*")
+//                        .hasAuthority("OWNER")
+//
+//                        .requestMatchers("/memberManage/AdminManage*")
+//                        .hasAuthority("ADMIN")
+//
 //                        .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-//                        .requestMatchers("/","/main/**","/memberManage/signup*",
-//                                "/memberManage/login*","/memberManage/find*",
-//                                "/oauth2/**","/userInfo/**","memberManage/userMyPage?email*").permitAll()
-//                        .requestMatchers("/memberManage/userMyPage","/myDining/myDining*").hasAuthority("USER")
-//                        .requestMatchers("/memberManage/ownerMy*").hasAuthority("OWNER")
-//                        .requestMatchers("/memberManage/adminManage*").hasAuthority("ADMIN")
+//                        .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*",
+//                                "/memberManage/find*", "/oauth2/**", "/userInfo/**").permitAll()
+//
 //                        .anyRequest().authenticated());
                         .anyRequest().permitAll());
 
@@ -117,16 +122,14 @@ public class SecurityConfig {
                         .failureUrl("/memberManage/loginPage?error=true"));
 
         //JWTFilter 추가
-        http
-                .addFilterAfter(new JWTFilter(jwtUtil, permissionManageRepository), OAuth2LoginAuthenticationFilter.class);
-        http
-                .addFilterAt(new JWTFilter(jwtUtil, permissionManageRepository), LoginFilter.class);
+//        http
+//                .addFilterAfter(new JWTFilter(jwtUtil, permissionManageRepository), OAuth2LoginAuthenticationFilter.class);
+//        http
+//                .addFilterAt(new JWTFilter(jwtUtil, permissionManageRepository), LoginFilter.class);
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         http
                 .addFilterBefore(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
-//        http
-//                .authenticationProvider(customAuthenticationProvider);
         //세션 설정
         http
                 .sessionManagement((session) -> session
@@ -134,4 +137,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }

@@ -1,12 +1,12 @@
 package com.ssg.dsilbackend.config;
 
-
 import com.ssg.dsilbackend.domain.Members;
 import com.ssg.dsilbackend.repository.UserManageRepository;
 import com.ssg.dsilbackend.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -33,7 +33,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         }
 
         if (!member.isStatus()) {
-            throw new BadCredentialsException("비활성화된 계정입니다.");
+            throw new DisabledException("비활성화된 계정입니다.");
         }
 
         CustomUserDetails userDetails = new CustomUserDetails(member);
