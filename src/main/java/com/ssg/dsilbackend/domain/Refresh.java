@@ -30,3 +30,4 @@ public class Refresh {
     @Column(name = "refresh_expiration")
     private LocalDateTime expiration;
 }
+
