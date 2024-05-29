@@ -21,6 +21,6 @@ public interface RestaurantListService {
     void removeBookmark(RestaurantBookmarkDTO restaurantBookmarkDTO);
 
 
-//    void incrementViewCount(Long id);  // 뷰 카운트 증가
+    void incrementViewCount(Long id);  // 뷰 카운트 증가
 
 }
