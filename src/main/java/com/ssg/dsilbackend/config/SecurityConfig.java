@@ -97,28 +97,29 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
 
-                        .requestMatchers("/memberManage/userMyPage*","/myDining/**")
+                        .requestMatchers("/memberManage/userMyPage*", "/myDining/**")
                         .hasAuthority("USER")
 
-                        .requestMatchers("/memberManage/ownerMy*","/restaurant/restaurant*")
+                        .requestMatchers("/memberManage/ownerMy*", "/restaurant/restaurant*")
                         .hasAuthority("OWNER")
 
-                        .requestMatchers("/memberManage/adminManage*")
+                        .requestMatchers("/memberManage/admin*")
                         .hasAuthority("ADMIN")
 
-                        .requestMatchers("/userInfo/**").hasAnyAuthority("USER","OWNER","ADMIN")
+                        .requestMatchers("/userInfo/**").hasAnyAuthority("USER", "OWNER", "ADMIN")
 
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
 
-                        .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*",
-                                "/memberManage/find*", "/oauth2/**", "/userInfo/**", "/restaurant/detail/**","/restaurant/list*").permitAll()
+                        .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*", "/memberManage/checkEmail",
+                                "/memberManage/find*", "/oauth2/**", "/userInfo/**", "/restaurant/detail/**", "/restaurant/list*").permitAll()
 
                         .anyRequest().authenticated());
-//                        .anyRequest().permitAll());
+
         http
-                .exceptionHandling((exceptionHandling)->exceptionHandling
-                        .accessDeniedPage("/access-denied"));
-//
+                .exceptionHandling((exceptionHandling) -> exceptionHandling
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/access-denied");
+                        }));
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
