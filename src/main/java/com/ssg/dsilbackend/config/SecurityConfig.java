@@ -109,7 +109,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*",
-                                "/memberManage/find*", "/oauth2/**", "/userInfo/**").permitAll()
+                                "/memberManage/find*", "/oauth2/**", "/userInfo/**", "/restaurant/detail/**").permitAll()
 
                         .anyRequest().authenticated());
 //                        .anyRequest().permitAll());
