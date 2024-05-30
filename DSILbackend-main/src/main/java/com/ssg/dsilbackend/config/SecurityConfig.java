@@ -44,17 +44,17 @@ public class SecurityConfig {
     private final RefreshRepository refreshRepository;
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+
         return configuration.getAuthenticationManager();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
         // cors 설정
         http
@@ -65,10 +65,9 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-
                         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-                        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-
+                        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
+                        configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
@@ -88,7 +87,7 @@ public class SecurityConfig {
                 //http basic 인증 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable);
 
-        //JWTFilter 추가
+        //JWTFilter 추가 @
         http
                 .addFilterBefore(new JWTFilter(jwtUtil, permissionManageRepository), UsernamePasswordAuthenticationFilter.class);
 
@@ -96,28 +95,15 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
+//                        .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
+//                        .requestMatchers("/","/signup*","/login*").permitAll()
+//                        .requestMatchers("/user").hasAuthority("USER")
+//                        .requestMatchers("/manager").hasAuthority("MANAGER")
+//                        .requestMatchers("/admin").hasAuthority("ADMIN")
 
-                        .requestMatchers("/memberManage/userMyPage*","/myDining/**")
-                        .hasAuthority("USER")
+//                        .requestMatchers("/memberManage/loginPage", "/", "/memberManage/signupPage", "/oauth2/**","/memberManage/adminManageUserPage").permitAll()
+                        .anyRequest().permitAll());
 
-                        .requestMatchers("/memberManage/ownerMy*","/restaurant/restaurant*")
-                        .hasAuthority("OWNER")
-
-                        .requestMatchers("/memberManage/adminManage*")
-                        .hasAuthority("ADMIN")
-
-                        .requestMatchers("/userInfo/**").hasAnyAuthority("USER","OWNER","ADMIN")
-
-                        .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-
-                        .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*",
-                                "/memberManage/find*", "/oauth2/**", "/userInfo/**", "/restaurant/detail/**","/restaurant/list*").permitAll()
-
-                        .anyRequest().authenticated());
-//                        .anyRequest().permitAll());
-        http
-                .exceptionHandling((exceptionHandling)->exceptionHandling
-                        .accessDeniedPage("/access-denied"));
 //
         //oauth2
         http
@@ -137,6 +123,7 @@ public class SecurityConfig {
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         http
                 .addFilterBefore(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
         //세션 설정
         http
                 .sessionManagement((session) -> session
@@ -144,5 +131,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }
