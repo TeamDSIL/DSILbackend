@@ -118,7 +118,6 @@ public class MyDiningController {
     @PutMapping("/reviewRemoveRequest/{reviewId}")
     @Transactional
     public ResponseEntity<?> removeRequestReview(@PathVariable Long reviewId){
-        System.out.println(reviewId+"삭제요청할 아이디!!");
         boolean result = myDiningService.removeRequestReview(reviewId);
         if (result) {
             return ResponseEntity.ok().body("취소 요청이 성공적으로 되었습니다.");
@@ -142,10 +141,6 @@ public class MyDiningController {
     @PostMapping("/registerRestaurant")
     public ResponseEntity<?> registerRestaurant(@RequestBody RestaurantRegisterDTO restaurantRegisterDTO) {
         try {
-            System.out.println(restaurantRegisterDTO);
-            // 여기에 식당 정보를 저장하는 로직을 추가합니다.
-            // 예를 들어, 데이터베이스에 restaurantRegisterDTO를 저장하는 코드를 넣을 수 있습니다.
-
             // 저장 로직 후, 성공적으로 저장되었다는 가정 하에 응답을 반환합니다.
             return ResponseEntity.ok("식당 정보가 성공적으로 등록되었습니다.");
         } catch (Exception e) {
