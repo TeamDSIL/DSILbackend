@@ -52,7 +52,7 @@ public class Restaurant {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Members member;
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Category> categories;
 
     // JsonManagedReference: Menu와 Facility간 역참조를 막아 무한재귀를 막음
@@ -70,7 +70,6 @@ public class Restaurant {
     private List<Reservation> reservations;
 
 
-
     public void updateRestaurantInfo(OwnerManageDTO ownerManageDTO) {
         this.tel = ownerManageDTO.getTel();
         this.address = ownerManageDTO.getAddress();
@@ -81,7 +80,7 @@ public class Restaurant {
         this.crowd = crowd;
     }
 
-    public void updateRestaurant(String tel, String img, Long deposit, Long tableCount, String description){
+    public void updateRestaurant(String tel, String img, Long deposit, Long tableCount, String description) {
         this.tel = tel;
         this.img = img;
         this.deposit = deposit;
@@ -96,16 +95,30 @@ public class Restaurant {
             throw new IllegalArgumentException("Not enough available tables to reduce.");
         }
     }
+
     public void recoverTable(Long tableCount) {
         this.tableCount += tableCount;
     }
+
     // Constructor
     public Restaurant(Long id) {
         this.id = id;
     }
 
     // Default constructor for JPA
-    protected Restaurant() {}
+    protected Restaurant() {
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories.clear();
+        this.categories.addAll(categories);
+    }
+
+    public void setFacilities(Set<Facility> facilities) {
+        this.facilities.clear();
+        this.facilities.addAll(facilities);
+    }
+
 
 }
 

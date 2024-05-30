@@ -97,29 +97,27 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
 
-
-                        .requestMatchers("/memberManage/UserMyPage*","/myDining/**")
+                        .requestMatchers("/memberManage/userMyPage*","/myDining/**")
                         .hasAuthority("USER")
 
-
-                        .requestMatchers("/memberManage/OwnerMy*","/restaurant/restaurant*")
-
+                        .requestMatchers("/memberManage/ownerMy*","/restaurant/restaurant*")
                         .hasAuthority("OWNER")
 
-                        .requestMatchers("/memberManage/AdminManage*")
+                        .requestMatchers("/memberManage/adminManage*")
                         .hasAuthority("ADMIN")
+
+                        .requestMatchers("/userInfo/**").hasAnyAuthority("USER","OWNER","ADMIN")
 
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
 
                         .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*",
-                                "/memberManage/find*", "/oauth2/**", "/userInfo/**", "/restaurant/detail/**").permitAll()
+                                "/memberManage/find*", "/oauth2/**", "/userInfo/**", "/restaurant/detail/**","/restaurant/list*").permitAll()
 
                         .anyRequest().authenticated());
-
-
 //                        .anyRequest().permitAll());
-
-
+        http
+                .exceptionHandling((exceptionHandling)->exceptionHandling
+                        .accessDeniedPage("/access-denied"));
 //
         //oauth2
         http
@@ -131,10 +129,10 @@ public class SecurityConfig {
                         .failureUrl("/memberManage/loginPage?error=true"));
 
         //JWTFilter 추가
-//        http
-//                .addFilterAfter(new JWTFilter(jwtUtil, permissionManageRepository), OAuth2LoginAuthenticationFilter.class);
-//        http
-//                .addFilterAt(new JWTFilter(jwtUtil, permissionManageRepository), LoginFilter.class);
+        http
+                .addFilterAfter(new JWTFilter(jwtUtil, permissionManageRepository), OAuth2LoginAuthenticationFilter.class);
+        http
+                .addFilterAt(new JWTFilter(jwtUtil, permissionManageRepository), LoginFilter.class);
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         http
@@ -143,7 +141,6 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
 
         return http.build();
     }

@@ -262,10 +262,10 @@ public class UserManageController {
     // 식당 관리자 페이지 - 식당 삭제
     @DeleteMapping("/adminManageRestaurantPage")
     @Transactional
-    public void deleteOwnerInfo(@RequestParam String restaurantName) {
+    public void deleteOwnerInfo(@RequestBody OwnerManageDTO ownerManageDTO) {
         log.info("식당 관리자 정보 삭제");
-        log.info(restaurantName);
-        userManageService.removeRestaurantByName(restaurantName);
+        log.info(ownerManageDTO);
+        userManageService.removeRestaurantByNameAndAddress(ownerManageDTO.getName(), ownerManageDTO.getAddress());
     }
 
     // 식당등록

@@ -19,4 +19,6 @@ public interface ReviewManageRepository extends JpaRepository<Review, Long> {
             "WHERE r.deleteStatus = TRUE")
     List<ReviewReplyDTO> findReviewDetails();
 
+
+
 }

@@ -43,6 +43,11 @@ public class UserManageServiceImpl implements UserManageService {
     private final PointManageRepository pointManageRepository;
     private final PermissionManageRepository permissionManageRepository;
     private final FacilityRepository facilityRepository;
+    private final ReservationRepository reservationRepository;
+    private final AvailableTimeRepository availableTimeRepository;
+    private final ReserveRepository reserveRepository;
+    private final ReviewRepository reviewRepository;
+
 
 
     //    ----------------------------------------------- User
@@ -261,8 +266,8 @@ public class UserManageServiceImpl implements UserManageService {
 
     @Override
     @Transactional
-    public void removeRestaurantByName(String name) {
-        restaurantRepository.removeByName(name);
+    public void removeRestaurantByNameAndAddress(String name, String address) {
+        restaurantRepository.removeByNameAndAddress(name, address);
     }
 
     // 등록해줘야 하는 식당

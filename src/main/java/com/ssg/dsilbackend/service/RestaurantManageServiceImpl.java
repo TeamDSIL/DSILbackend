@@ -77,6 +77,10 @@ private SentimentAnalysisService sentimentAnalysisService;
                 restaurantDTO.getDescription()
         );
 
+        // 기존 카테고리 및 편의시설 삭제
+        restaurant.getCategories().clear();
+        restaurant.getFacilities().clear();
+
         updateCategories(restaurant, restaurantDTO.getCategories());
         updateFacilities(restaurant, restaurantDTO.getFacilities());
         updateMenus(restaurant, restaurantDTO.getMenus());
@@ -85,58 +89,16 @@ private SentimentAnalysisService sentimentAnalysisService;
     }
 
     private void updateCategories(Restaurant restaurant, List<CategoryDTO> categoryDtos) {
-        List<Category> existingCategories = categoryRepository.findByRestaurantId(restaurant.getId());
-
-        // Delete categories that are not in the new list
-        existingCategories.stream()
-                .filter(existingCategory -> categoryDtos.stream()
-                        .noneMatch(dto -> dto.getId() != null && dto.getId().equals(existingCategory.getId())))
-                .forEach(categoryRepository::delete);
-
-        // Add or update categories
         categoryDtos.forEach(dto -> {
-            if (dto.getId() == null) {
-                // Add new category
-                Category category = Category.builder().name(dto.getName()).restaurant(restaurant).build();
-                categoryRepository.save(category);
-            } else {
-                // Update existing category
-                existingCategories.stream()
-                        .filter(existingCategory -> existingCategory.getId().equals(dto.getId()))
-                        .findFirst()
-                        .ifPresent(existingCategory -> {
-                            existingCategory.setCategoryName(dto.getName());
-                            categoryRepository.save(existingCategory);
-                        });
-            }
+            Category category = Category.builder().name(dto.getName()).restaurant(restaurant).build();
+            categoryRepository.save(category);
         });
     }
 
     private void updateFacilities(Restaurant restaurant, List<FacilityDTO> facilityDtos) {
-        List<Facility> existingFacilities = facilityRepository.findByRestaurantId(restaurant.getId());
-
-        // Delete facilities that are not in the new list
-        existingFacilities.stream()
-                .filter(existingFacility -> facilityDtos.stream()
-                        .noneMatch(dto -> dto.getId() != null && dto.getId().equals(existingFacility.getId())))
-                .forEach(facilityRepository::delete);
-
-        // Add or update facilities
         facilityDtos.forEach(dto -> {
-            if (dto.getId() == null) {
-                // Add new facility
-                Facility facility = Facility.builder().name(dto.getName()).restaurant(restaurant).build();
-                facilityRepository.save(facility);
-            } else {
-                // Update existing facility
-                existingFacilities.stream()
-                        .filter(existingFacility -> existingFacility.getId().equals(dto.getId()))
-                        .findFirst()
-                        .ifPresent(existingFacility -> {
-                            existingFacility.setFacilityName(dto.getName());
-                            facilityRepository.save(existingFacility);
-                        });
-            }
+            Facility facility = Facility.builder().name(dto.getName()).restaurant(restaurant).build();
+            facilityRepository.save(facility);
         });
     }
 
