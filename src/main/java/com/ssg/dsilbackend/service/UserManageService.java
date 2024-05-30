@@ -25,7 +25,7 @@ public interface UserManageService {
     List<ReviewReplyDTO> getReviewReplyList();
 
     void modifyOwnerInfo(OwnerManageDTO ownerManageDTO);
-    void removeRestaurantByName(String name);
+    void removeRestaurantByNameAndAddress(String name, String address);
 
 
     void registerRestaurantInfo(RestaurantRegisterDTO dto);

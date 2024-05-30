@@ -16,4 +16,6 @@ public interface ReserveRepository extends JpaRepository<Reservation, Long> {
 
     //예약생태를 기준으로 예약목록을 찾는 쿼리
     List<Reservation> findByRestaurantIdAndReservationStateName(Long restaurantId, ReservationStateName reservationStateName);
+
+
 }

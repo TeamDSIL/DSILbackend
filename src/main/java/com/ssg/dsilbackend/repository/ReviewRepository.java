@@ -31,6 +31,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r FROM Review r JOIN FETCH r.reservation res")
     List<Review> findAllWithReservation();
+
 }
 
 
