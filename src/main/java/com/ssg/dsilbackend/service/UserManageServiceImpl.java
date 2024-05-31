@@ -121,8 +121,6 @@ public class UserManageServiceImpl implements UserManageService {
         Optional<Members> userInfo = userManageRepository.findByEmail(userManageDTO.getEmail());
         Members members = userInfo.orElseThrow(() -> new RuntimeException("User not found"));
 
-        log.info(members);
-        members.updatePassword(bCryptPasswordEncoder.encode(userManageDTO.getPassword()));
         members.updateMemberInfo(userManageDTO);
         log.info(members);
         userManageRepository.save(members);
