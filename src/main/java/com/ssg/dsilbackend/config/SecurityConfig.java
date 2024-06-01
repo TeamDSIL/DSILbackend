@@ -42,6 +42,8 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final RefreshRepository refreshRepository;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -100,26 +102,27 @@ public class SecurityConfig {
                         .requestMatchers("/memberManage/userMyPage*", "/myDining/**")
                         .hasAuthority("USER")
 
-                        .requestMatchers("/memberManage/ownerMy*", "/restaurant/restaurant*")
+                        .requestMatchers("/memberManage/ownerMy*")
                         .hasAuthority("OWNER")
 
                         .requestMatchers("/memberManage/admin*")
                         .hasAuthority("ADMIN")
 
-                        .requestMatchers("/userInfo/**").hasAnyAuthority("USER", "OWNER", "ADMIN")
+                        .requestMatchers("/userInfo/**", "/restaurant/bookmark*").hasAnyAuthority("USER", "OWNER", "ADMIN")
 
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
 
                         .requestMatchers("/", "/main/**", "/memberManage/signup*", "/memberManage/login*", "/memberManage/checkEmail",
                                 "/memberManage/find*", "/oauth2/**", "/userInfo/**", "/restaurant/detail/**", "/restaurant/list*").permitAll()
-
                         .anyRequest().authenticated());
 
+//                        .anyRequest().permitAll());
+
         http
-                .exceptionHandling((exceptionHandling) -> exceptionHandling
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendRedirect("/access-denied");
-                        }));
+                .exceptionHandling(config -> config
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                );
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
